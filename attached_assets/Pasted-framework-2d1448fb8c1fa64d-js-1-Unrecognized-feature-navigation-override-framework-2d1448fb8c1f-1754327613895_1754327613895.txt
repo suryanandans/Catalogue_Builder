@@ -1,0 +1,34 @@
+framework-2d1448fb8c1fa64d.js:1 Unrecognized feature: 'navigation-override'.
+framework-2d1448fb8c1fa64d.js:1 Unrecognized feature: 'oversized-images'.
+framework-2d1448fb8c1fa64d.js:1 Unrecognized feature: 'publickey-credentials'.
+framework-2d1448fb8c1fa64d.js:1 Unrecognized feature: 'speaker-selection'.
+framework-2d1448fb8c1fa64d.js:1 Unrecognized feature: 'unoptimized-images'.
+framework-2d1448fb8c1fa64d.js:1 Unrecognized feature: 'unsized-media'.
+framework-2d1448fb8c1fa64d.js:1 Unrecognized feature: 'pointer-lock'.
+framework-2d1448fb8c1fa64d.js:1 Allow attribute will take precedence over 'allowfullscreen'.
+framework-2d1448fb8c1fa64d.js:1 Allow attribute will take precedence over 'allowpaymentrequest'.
+analytics.tiktok.com…8PIVDSDJG&lib=ttq:1 
+ Failed to load resource: net::ERR_NETWORK_CHANGED
+CatalogueBuilder:1 Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner.
+framework-2d1448fb8c1fa64d.js:1 Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+CatalogueBuilder:1 Access to fetch at 'https://sp.replit.com/v1/t' from origin 'https://replit.com' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+sp.replit.com/v1/t:1 
+ Failed to load resource: net::ERR_FAILED
+framework-2d1448fb8c1fa64d.js:1 Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+workspace_iframe.html:32 Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+workspace_iframe.html:32 Unrecognized feature: 'ambient-light-sensor'.
+workspace_iframe.html:32 Unrecognized feature: 'battery'.
+workspace_iframe.html:32 Unrecognized feature: 'execution-while-not-rendered'.
+workspace_iframe.html:32 Unrecognized feature: 'execution-while-out-of-viewport'.
+workspace_iframe.html:32 Unrecognized feature: 'layout-animations'.
+workspace_iframe.html:32 Unrecognized feature: 'legacy-image-formats'.
+workspace_iframe.html:32 Unrecognized feature: 'navigation-override'.
+workspace_iframe.html:32 Unrecognized feature: 'oversized-images'.
+workspace_iframe.html:32 Unrecognized feature: 'publickey-credentials'.
+workspace_iframe.html:32 Unrecognized feature: 'speaker-selection'.
+workspace_iframe.html:32 Unrecognized feature: 'unoptimized-images'.
+workspace_iframe.html:32 Unrecognized feature: 'unsized-media'.
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowfullscreen'.
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowpaymentrequest'.
+﻿
+

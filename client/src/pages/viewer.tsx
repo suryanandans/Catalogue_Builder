@@ -7,6 +7,12 @@ import { BookProject } from "@/types/book";
 import BookViewer from "@/components/book-viewer-dual";
 
 const createDemoContent = (demoProject: BookProject) => {
+  // Create sample images as SVG data URLs for demo purposes
+  const sampleImage1 = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDMwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjM0I4MkY2Ii8+Cjx0ZXh0IHg9IjE1MCIgeT0iMTAwIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE4cHgiPkJvb2tDcmFmdCBEZW1vPC90ZXh0Pgo8L3N2Zz4K";
+  const sampleImage2 = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjMTBCOTgxIi8+Cjx0ZXh0IHg9IjEwMCIgeT0iMTAwIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0cHgiPkltYWdlIDI8L3RleHQ+Cjwvc3ZnPgo=";
+  const sampleImage3 = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjU5RTBCIi8+Cjx0ZXh0IHg9IjEwMCIgeT0iMTAwIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0cHgiPkltYWdlIDM8L3RleHQ+Cjwvc3ZnPgo=";
+  const sampleImage4 = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRUY0NDQ0Ii8+Cjx0ZXh0IHg9IjEwMCIgeT0iMTAwIiBmaWxsPSJ3aGl0ZSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZG9taW5hbnQtYmFzZWxpbmU9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjE0cHgiPkltYWdlIDQ8L3RleHQ+Cjwvc3ZnPgo=";
+
   demoProject.pages = [
     {
       id: "demo-page-1",
@@ -24,7 +30,7 @@ const createDemoContent = (demoProject: BookProject) => {
         template: "hero-image",
         content: {
           title: "Beautiful Design & Functionality",
-          image: null
+          image: sampleImage1
         },
         position: "right"
       }
@@ -45,9 +51,8 @@ const createDemoContent = (demoProject: BookProject) => {
         template: "mixed-media",
         content: {
           title: "Interactive Content",
-          content: "Combine text, images, and multimedia elements to create engaging digital experiences that captivate your readers.",
-          mediaUrl: null,
-          mediaType: null
+          text: "Combine text, images, and multimedia elements to create engaging digital experiences that captivate your readers.",
+          image: sampleImage2
         },
         position: "right"
       }
@@ -58,7 +63,7 @@ const createDemoContent = (demoProject: BookProject) => {
         id: "demo-left-3",
         template: "photo-grid",
         content: {
-          images: []
+          images: [sampleImage2, sampleImage3, sampleImage4, sampleImage1]
         },
         position: "left"
       },
@@ -82,6 +87,7 @@ export default function ViewerPage() {
   useEffect(() => {
     // Load user projects first, fallback to demo if none exist
     const projects = LocalStorage.getProjects();
+    console.log("Viewer: Found projects:", projects.length, projects);
     
     if (projects.length > 0) {
       // Load the most recently updated project
@@ -89,34 +95,21 @@ export default function ViewerPage() {
         new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
       );
       
-      // Validate that the project has valid templates
       const project = sortedProjects[0];
-      const validTemplates = ['photo-grid', 'text-article', 'hero-image', 'quote-block', 'mixed-media'];
-      let hasInvalidTemplates = false;
+      console.log("Viewer: Loading project:", project.title, project);
       
-      project.pages.forEach(page => {
-        if (page.left && !validTemplates.includes(page.left.template)) {
-          console.warn(`Invalid template found: ${page.left.template}`);
-          hasInvalidTemplates = true;
-        }
-        if (page.right && !validTemplates.includes(page.right.template)) {
-          console.warn(`Invalid template found: ${page.right.template}`);
-          hasInvalidTemplates = true;
-        }
+      // Log the project structure for debugging
+      project.pages.forEach((page, index) => {
+        console.log(`Page ${index}:`, {
+          left: page.left ? { template: page.left.template, content: page.left.content } : null,
+          right: page.right ? { template: page.right.template, content: page.right.content } : null
+        });
       });
       
-      if (hasInvalidTemplates) {
-        console.log("Found invalid templates, creating fresh demo project...");
-        // Create demo only if templates are invalid
-        const demoProject = LocalStorage.createNewProject("BookCraft Demo");
-        createDemoContent(demoProject);
-        LocalStorage.saveProject(demoProject);
-        setCurrentProject(demoProject);
-      } else {
-        setCurrentProject(project);
-      }
+      setCurrentProject(project);
     } else {
       // Create a demo project only if no projects exist
+      console.log("Viewer: No projects found, creating demo");
       const demoProject = LocalStorage.createNewProject("BookCraft Demo");
       createDemoContent(demoProject);
       LocalStorage.saveProject(demoProject);
@@ -154,16 +147,17 @@ export default function ViewerPage() {
                 const projects = LocalStorage.getProjects();
                 const selectedProject = projects.find(p => p.id === e.target.value);
                 if (selectedProject) {
+                  console.log("Viewer: Switching to project:", selectedProject.title, selectedProject);
                   setCurrentProject(selectedProject);
                 }
               }}
-              value={currentProject.id}
+              value={currentProject?.id || ''}
               className="bg-black/30 text-white border border-white/20 rounded px-3 py-1 text-sm"
               data-testid="select-project"
             >
               {LocalStorage.getProjects().map(project => (
                 <option key={project.id} value={project.id} className="text-black">
-                  {project.title}
+                  {project.title} ({project.pages.length} pages)
                 </option>
               ))}
             </select>
