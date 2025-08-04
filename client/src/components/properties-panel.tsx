@@ -165,7 +165,23 @@ export default function PropertiesPanel({ selectedContent, onContentUpdate }: Pr
                     <input
                       type="file"
                       accept="image/*"
-                      onChange={(e) => handleMediaUpload(e, 'image')}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file && selectedContent && onContentUpdate) {
+                          const reader = new FileReader();
+                          reader.onload = (event) => {
+                            const imageUrl = event.target?.result as string;
+                            onContentUpdate({
+                              ...selectedContent,
+                              content: {
+                                ...selectedContent.content,
+                                image: imageUrl
+                              }
+                            });
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
                       className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                       data-testid="input-hero-image"
                     />
@@ -175,9 +191,20 @@ export default function PropertiesPanel({ selectedContent, onContentUpdate }: Pr
                     >
                       <Upload className="mb-2 mx-auto" size={24} />
                       <br />
-                      Upload Hero Image
+                      {selectedContent.content.image ? 'Change Hero Image' : 'Upload Hero Image'}
                     </Button>
                   </div>
+                  
+                  {selectedContent.content.image && (
+                    <div className="mb-4">
+                      <img 
+                        src={selectedContent.content.image} 
+                        alt="Hero preview" 
+                        className="w-full h-24 object-cover rounded border"
+                      />
+                    </div>
+                  )}
+                  
                   <Label className="text-sm font-medium text-gray-700 mb-2 block">Title</Label>
                   <Input
                     value={selectedContent.content.title || ""}
@@ -191,18 +218,31 @@ export default function PropertiesPanel({ selectedContent, onContentUpdate }: Pr
               {selectedContent.template === 'photo-grid' && (
                 <div>
                   <Label className="text-sm font-medium text-gray-700 mb-2 block">Photo Grid</Label>
-                  <div className="relative">
+                  <div className="relative mb-4">
                     <input
                       type="file"
                       accept="image/*"
                       multiple
                       onChange={(e) => {
                         const files = Array.from(e.target.files || []);
+                        const newImages: string[] = [];
+                        let loadedCount = 0;
+                        
                         files.forEach(file => {
                           const reader = new FileReader();
                           reader.onload = (event) => {
-                            // Handle multiple image uploads for grid
-                            console.log("Grid image uploaded:", event.target?.result);
+                            newImages.push(event.target?.result as string);
+                            loadedCount++;
+                            
+                            if (loadedCount === files.length && selectedContent && onContentUpdate) {
+                              onContentUpdate({
+                                ...selectedContent,
+                                content: {
+                                  ...selectedContent.content,
+                                  images: [...(selectedContent.content.images || []), ...newImages]
+                                }
+                              });
+                            }
                           };
                           reader.readAsDataURL(file);
                         });
@@ -219,6 +259,42 @@ export default function PropertiesPanel({ selectedContent, onContentUpdate }: Pr
                       Upload Images (Multiple)
                     </Button>
                   </div>
+                  
+                  {selectedContent.content.images && selectedContent.content.images.length > 0 && (
+                    <div className="mb-4">
+                      <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                        Uploaded Images ({selectedContent.content.images.length})
+                      </Label>
+                      <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto">
+                        {selectedContent.content.images.map((image: string, index: number) => (
+                          <div key={index} className="relative">
+                            <img 
+                              src={image} 
+                              alt={`Grid image ${index + 1}`} 
+                              className="w-full h-16 object-cover rounded border"
+                            />
+                            <button
+                              onClick={() => {
+                                if (selectedContent && onContentUpdate) {
+                                  const updatedImages = selectedContent.content.images.filter((_: any, i: number) => i !== index);
+                                  onContentUpdate({
+                                    ...selectedContent,
+                                    content: {
+                                      ...selectedContent.content,
+                                      images: updatedImages
+                                    }
+                                  });
+                                }
+                              }}
+                              className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 text-xs flex items-center justify-center hover:bg-red-600"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </>

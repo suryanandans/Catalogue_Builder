@@ -13,12 +13,36 @@ export const templates: Template[] = [
       </div>
     ),
     content: (props) => (
-      <div className="grid grid-cols-2 gap-2 h-full">
-        {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="bg-gray-200 rounded object-cover w-full h-full flex items-center justify-center">
-            <Image className="text-gray-400" size={24} />
+      <div className="relative grid grid-cols-2 gap-2 h-full">
+        {props.images && props.images.length > 0 ? (
+          props.images.slice(0, 4).map((image: string, index: number) => (
+            <img 
+              key={index}
+              src={image} 
+              alt={`Grid image ${index + 1}`} 
+              className="bg-gray-200 rounded object-cover w-full h-full"
+              data-testid={`grid-image-${index}`}
+            />
+          ))
+        ) : (
+          [1, 2, 3, 4].map((i) => (
+            <div key={i} className="bg-gray-200 rounded object-cover w-full h-full flex items-center justify-center">
+              {i === 1 ? (
+                <div className="text-center text-gray-500">
+                  <Image className="mx-auto mb-1" size={24} />
+                  <p className="text-xs">Add photos</p>
+                </div>
+              ) : (
+                <Image className="text-gray-400" size={20} />
+              )}
+            </div>
+          ))
+        )}
+        {props.images && props.images.length > 4 && (
+          <div className="absolute top-2 right-2 bg-black/60 text-white px-2 py-1 rounded text-xs">
+            +{props.images.length - 4} more
           </div>
-        ))}
+        )}
       </div>
     ),
     defaultProps: {
@@ -73,9 +97,21 @@ export const templates: Template[] = [
     ),
     content: (props) => (
       <div className="relative h-full">
-        <div className="bg-gray-200 rounded-lg object-cover w-full h-3/4 flex items-center justify-center">
-          <Image className="text-gray-400" size={48} />
-        </div>
+        {props.image ? (
+          <img 
+            src={props.image} 
+            alt={props.title || "Hero Image"} 
+            className="w-full h-3/4 object-cover rounded-lg"
+            data-testid="hero-image-display"
+          />
+        ) : (
+          <div className="bg-gray-200 rounded-lg object-cover w-full h-3/4 flex items-center justify-center">
+            <div className="text-center text-gray-500">
+              <Image className="mx-auto mb-2" size={48} />
+              <p className="text-sm">Click Properties to add image</p>
+            </div>
+          </div>
+        )}
         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent rounded-b-lg p-4">
           <h3 
             className="text-white font-bold" 
