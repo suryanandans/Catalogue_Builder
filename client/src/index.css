@@ -36,6 +36,75 @@
   --bookcraft-gray-900: hsl(220, 27%, 8%);
 }
 
+/* Realistic Book Animations */
+.book-container {
+  filter: drop-shadow(0 20px 40px rgba(0,0,0,0.3));
+}
+
+.book-page-static {
+  position: relative;
+  background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+}
+
+.book-page-static::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: -1px;
+  width: 2px;
+  height: 100%;
+  background: linear-gradient(to bottom, 
+    rgba(0,0,0,0.1) 0%, 
+    rgba(0,0,0,0.05) 50%, 
+    rgba(0,0,0,0.1) 100%);
+  z-index: 1;
+}
+
+.book-page-flip {
+  background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
+  transition: all 0.3s ease;
+}
+
+/* Enhanced page curl shadow effect */
+.book-page-flip::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 20px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(0,0,0,0.1) 50%, 
+    rgba(0,0,0,0.2) 100%);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Page bend highlight */
+.book-page-flip::before {
+  content: '';
+  position: absolute;
+  top: 10%;
+  bottom: 10%;
+  width: 2px;
+  background: linear-gradient(to bottom,
+    transparent 0%,
+    rgba(255,255,255,0.8) 20%,
+    rgba(255,255,255,0.9) 50%,
+    rgba(255,255,255,0.8) 80%,
+    transparent 100%);
+  z-index: 3;
+}
+
+/* Page texture effect */
+.book-page-static,
+.book-page-flip {
+  background-image: 
+    radial-gradient(circle at 20% 50%, rgba(255,255,255,0.3) 0%, transparent 50%),
+    radial-gradient(circle at 80% 50%, rgba(255,255,255,0.3) 0%, transparent 50%),
+    linear-gradient(145deg, transparent 0%, rgba(0,0,0,0.02) 100%);
+}
+
 .dark {
   --background: hsl(240, 10%, 3.9%);
   --foreground: hsl(0, 0%, 98%);

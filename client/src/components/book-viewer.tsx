@@ -13,6 +13,7 @@ interface BookViewerProps {
 export default function BookViewer({ project, onPageChange }: BookViewerProps) {
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [isFlipping, setIsFlipping] = useState(false);
+  const [flipDirection, setFlipDirection] = useState<'next' | 'prev'>('next');
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   const totalPages = project.pages.length;
@@ -31,10 +32,11 @@ export default function BookViewer({ project, onPageChange }: BookViewerProps) {
       return;
     }
 
+    setFlipDirection(direction);
     setIsFlipping(true);
     
-    // Simulate page flip animation
-    await new Promise(resolve => setTimeout(resolve, 400));
+    // Realistic page flip timing
+    await new Promise(resolve => setTimeout(resolve, 1200));
     
     setCurrentPageIndex(newIndex);
     onPageChange?.(newIndex);
@@ -106,41 +108,157 @@ export default function BookViewer({ project, onPageChange }: BookViewerProps) {
 
       {/* Book Viewer */}
       <div className="flex-1 flex items-center justify-center p-8">
-        <div className="relative book-perspective">
+        <div className="relative" style={{ perspective: "2000px", perspectiveOrigin: "center center" }}>
           {/* Book Container */}
-          <div className="relative flex" style={{ transformStyle: "preserve-3d" }}>
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={`page-${currentPageIndex}`}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="flex"
-              >
-                {/* Left Page */}
-                <motion.div
-                  className="book-page bg-white rounded-l-xl shadow-2xl w-96 h-96 p-8 relative border-r border-gray-200"
-                  animate={isFlipping ? { rotateY: -180 } : { rotateY: 0 }}
-                  transition={{ duration: 0.8, ease: [0.645, 0.045, 0.355, 1] }}
-                  style={{ transformOrigin: "right center" }}
-                  data-testid="page-left"
-                >
-                  {renderPageContent(currentPage?.left, 'left')}
-                </motion.div>
+          <div className="relative book-container" style={{ transformStyle: "preserve-3d" }}>
+            {/* Book Base (Always visible) */}
+            <div className="flex relative" style={{ transformStyle: "preserve-3d" }}>
+              {/* Back/Left Page (static) */}
+              <div className="book-page-static bg-white w-96 h-96 p-8 relative border-r border-gray-200 shadow-xl"
+                   style={{ 
+                     borderTopLeftRadius: "12px",
+                     borderBottomLeftRadius: "12px",
+                     boxShadow: "inset 3px 0 10px rgba(0,0,0,0.1), 0 0 20px rgba(0,0,0,0.2)"
+                   }}>
+                {renderPageContent(currentPage?.left, 'left')}
+              </div>
 
-                {/* Right Page */}
-                <motion.div
-                  className="book-page bg-white rounded-r-xl shadow-2xl w-96 h-96 p-8 relative"
-                  animate={isFlipping ? { rotateY: 180 } : { rotateY: 0 }}
-                  transition={{ duration: 0.8, ease: [0.645, 0.045, 0.355, 1] }}
-                  style={{ transformOrigin: "left center" }}
-                  data-testid="page-right"
-                >
-                  {renderPageContent(currentPage?.right, 'right')}
-                </motion.div>
-              </motion.div>
-            </AnimatePresence>
+              {/* Flipping Page Overlay */}
+              <AnimatePresence>
+                {isFlipping && (
+                  <motion.div
+                    className={`absolute top-0 book-page-flip bg-white w-96 h-96 p-8 ${
+                      flipDirection === 'next' 
+                        ? 'left-0 border-r border-gray-200' 
+                        : 'right-0 border-l border-gray-200'
+                    }`}
+                    style={{ 
+                      transformOrigin: flipDirection === 'next' ? "right center" : "left center",
+                      transformStyle: "preserve-3d",
+                      zIndex: 10,
+                      borderTopLeftRadius: flipDirection === 'next' ? "12px" : "0px",
+                      borderBottomLeftRadius: flipDirection === 'next' ? "12px" : "0px",
+                      borderTopRightRadius: flipDirection === 'prev' ? "12px" : "0px",
+                      borderBottomRightRadius: flipDirection === 'prev' ? "12px" : "0px",
+                      boxShadow: "0 0 30px rgba(0,0,0,0.4)"
+                    }}
+                    initial={{ 
+                      rotateY: 0,
+                      scale: 1,
+                      boxShadow: "0 0 20px rgba(0,0,0,0.2)"
+                    }}
+                    animate={{ 
+                      rotateY: flipDirection === 'next' ? -180 : 180,
+                      scale: 1.02,
+                      boxShadow: flipDirection === 'next' 
+                        ? "20px 20px 60px rgba(0,0,0,0.5)"
+                        : "-20px 20px 60px rgba(0,0,0,0.5)"
+                    }}
+                    exit={{ 
+                      rotateY: flipDirection === 'next' ? -180 : 180,
+                      scale: 1,
+                      opacity: 0
+                    }}
+                    transition={{ 
+                      duration: 1.2, 
+                      ease: [0.25, 0.46, 0.45, 0.94],
+                      scale: { duration: 0.6 },
+                      boxShadow: { duration: 0.8 }
+                    }}
+                  >
+                    {/* Front side of flipping page */}
+                    <div className="absolute inset-0 p-8" style={{ backfaceVisibility: "hidden" }}>
+                      {flipDirection === 'next' 
+                        ? renderPageContent(currentPage?.left, 'left')
+                        : renderPageContent(currentPage?.right, 'right')
+                      }
+                    </div>
+                    
+                    {/* Back side of flipping page */}
+                    <div 
+                      className="absolute inset-0 p-8 bg-white" 
+                      style={{ 
+                        transform: "rotateY(180deg)",
+                        backfaceVisibility: "hidden",
+                        borderTopRightRadius: flipDirection === 'next' ? "12px" : "0px",
+                        borderBottomRightRadius: flipDirection === 'next' ? "12px" : "0px",
+                        borderTopLeftRadius: flipDirection === 'prev' ? "12px" : "0px",
+                        borderBottomLeftRadius: flipDirection === 'prev' ? "12px" : "0px"
+                      }}
+                    >
+                      {/* Next/Previous page content preview */}
+                      <div className="opacity-90">
+                        {flipDirection === 'next' && currentPageIndex < totalPages - 1 
+                          ? renderPageContent(project.pages[currentPageIndex + 1]?.left, 'left')
+                          : flipDirection === 'prev' && currentPageIndex > 0
+                          ? renderPageContent(project.pages[currentPageIndex - 1]?.right, 'right')
+                          : null
+                        }
+                      </div>
+                    </div>
+
+                    {/* Page fold highlight and shadow */}
+                    <div 
+                      className={`absolute top-0 w-1 h-full ${
+                        flipDirection === 'next' 
+                          ? 'right-0 bg-gradient-to-r from-transparent to-black/20' 
+                          : 'left-0 bg-gradient-to-l from-transparent to-black/20'
+                      }`}
+                      style={{ 
+                        transform: "translateZ(1px)",
+                        borderTopRightRadius: flipDirection === 'next' ? "12px" : "0px",
+                        borderBottomRightRadius: flipDirection === 'next' ? "12px" : "0px",
+                        borderTopLeftRadius: flipDirection === 'prev' ? "12px" : "0px",
+                        borderBottomLeftRadius: flipDirection === 'prev' ? "12px" : "0px"
+                      }}
+                    />
+
+                    {/* Curling corner effect */}
+                    <motion.div
+                      className={`absolute ${
+                        flipDirection === 'next' ? 'top-0 right-0' : 'top-0 left-0'
+                      } w-8 h-8 bg-gradient-to-br from-white to-gray-100`}
+                      style={{
+                        clipPath: flipDirection === 'next' 
+                          ? "polygon(0 0, 100% 0, 0 100%)"
+                          : "polygon(100% 0, 100% 100%, 0 0)",
+                        borderTopRightRadius: flipDirection === 'next' ? "12px" : "0px",
+                        borderTopLeftRadius: flipDirection === 'prev' ? "12px" : "0px",
+                        boxShadow: "0 2px 8px rgba(0,0,0,0.3)"
+                      }}
+                      animate={{
+                        scale: [1, 1.1, 1],
+                        opacity: [0.8, 1, 0.8]
+                      }}
+                      transition={{
+                        duration: 1.2,
+                        repeat: 0,
+                        ease: "easeInOut"
+                      }}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Right Page (static) */}
+              <div className="book-page-static bg-white w-96 h-96 p-8 relative shadow-xl"
+                   style={{ 
+                     borderTopRightRadius: "12px",
+                     borderBottomRightRadius: "12px",
+                     boxShadow: "inset -3px 0 10px rgba(0,0,0,0.1), 0 0 20px rgba(0,0,0,0.2)"
+                   }}>
+                {renderPageContent(currentPage?.right, 'right')}
+              </div>
+            </div>
+
+            {/* Book spine shadow */}
+            <div 
+              className="absolute top-0 left-1/2 w-2 h-96 bg-gradient-to-r from-black/20 to-transparent"
+              style={{ 
+                transform: "translateX(-50%) translateZ(-1px)",
+                borderRadius: "1px"
+              }}
+            />
           </div>
 
           {/* Page Turn Controls */}
