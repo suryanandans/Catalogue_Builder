@@ -3,6 +3,7 @@ import { useLocation } from "wouter";
 import { Edit, Eye, Check, Grid, FileText, Image, Quote, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { LocalStorage } from "@/lib/storage";
 
 export default function LandingPage() {
   const [, navigate] = useLocation();
@@ -75,7 +76,11 @@ export default function LandingPage() {
               </div>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button 
-                  onClick={() => navigate("/editor")}
+                  onClick={() => {
+                    // Create a new project when starting to create
+                    const newProject = LocalStorage.createNewProject("My New Book");
+                    navigate("/editor");
+                  }}
                   size="lg"
                   className="bg-bookcraft-primary hover:bg-blue-700 text-white px-8 py-4 text-lg font-semibold shadow-lg hover:scale-105 transition-all"
                   data-testid="button-start-creating"

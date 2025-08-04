@@ -18,11 +18,16 @@ export default function EditorPage() {
   const [selectedContent, setSelectedContent] = useState<PageContent | undefined>();
 
   useEffect(() => {
-    // Load or create a new project
+    // Load the most recent project
     const projects = LocalStorage.getProjects();
     if (projects.length > 0) {
-      setCurrentProject(projects[0]);
+      // Load the most recently updated project
+      const sortedProjects = projects.sort((a, b) => 
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+      );
+      setCurrentProject(sortedProjects[0]);
     } else {
+      // Create a new project if none exist
       const newProject = LocalStorage.createNewProject("My Digital Book");
       setCurrentProject(newProject);
     }

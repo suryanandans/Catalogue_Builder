@@ -14,7 +14,11 @@ export default function ViewerPage() {
     // Load the most recent project or create a demo project
     const projects = LocalStorage.getProjects();
     if (projects.length > 0) {
-      setCurrentProject(projects[0]);
+      // Load the most recently updated project
+      const sortedProjects = projects.sort((a, b) => 
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+      );
+      setCurrentProject(sortedProjects[0]);
     } else {
       // Create a demo project for viewing
       const demoProject = LocalStorage.createNewProject("Demo Book");
