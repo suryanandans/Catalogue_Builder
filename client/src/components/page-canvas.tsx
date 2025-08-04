@@ -9,13 +9,15 @@ interface PageCanvasProps {
   position: 'left' | 'right';
   onContentUpdate?: (content: PageContent) => void;
   onTemplateApply?: (template: any, position: 'left' | 'right') => void;
+  onContentSelect?: (content: PageContent) => void;
 }
 
 export default function PageCanvas({ 
   pageContent, 
   position, 
   onContentUpdate, 
-  onTemplateApply 
+  onTemplateApply,
+  onContentSelect 
 }: PageCanvasProps) {
   const [isDragOver, setIsDragOver] = useState(false);
 
@@ -60,7 +62,14 @@ export default function PageCanvas({
       return <div>Template not found</div>;
     }
 
-    return template.content(pageContent.content);
+    return (
+      <div 
+        onClick={() => onContentSelect?.(pageContent)}
+        className="cursor-pointer h-full"
+      >
+        {template.content(pageContent.content)}
+      </div>
+    );
   };
 
   return (

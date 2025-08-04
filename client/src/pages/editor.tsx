@@ -188,12 +188,14 @@ export default function EditorPage() {
                 position="left"
                 onContentUpdate={handleContentUpdate}
                 onTemplateApply={handleTemplateApply}
+                onContentSelect={setSelectedContent}
               />
               <PageCanvas
                 pageContent={currentPage.right}
                 position="right"
                 onContentUpdate={handleContentUpdate}
                 onTemplateApply={handleTemplateApply}
+                onContentSelect={setSelectedContent}
               />
             </motion.div>
 
