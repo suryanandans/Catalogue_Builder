@@ -25,7 +25,8 @@ export class MemStorage implements IStorage {
     const id = randomUUID();
     const now = new Date().toISOString();
     const project: Project = { 
-      ...insertProject, 
+      ...insertProject,
+      pages: insertProject.pages || [],
       id, 
       createdAt: now,
       updatedAt: now

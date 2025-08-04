@@ -61,6 +61,18 @@ export default {
           border: "var(--sidebar-border)",
           ring: "var(--sidebar-ring)",
         },
+        // BookCraft custom colors
+        bookcraft: {
+          primary: "var(--bookcraft-primary)",
+          secondary: "var(--bookcraft-secondary)",
+          accent: "var(--bookcraft-accent)",
+          gray: {
+            50: "var(--bookcraft-gray-50)",
+            100: "var(--bookcraft-gray-100)",
+            200: "var(--bookcraft-gray-200)",
+            900: "var(--bookcraft-gray-900)",
+          },
+        },
       },
       keyframes: {
         "accordion-down": {
