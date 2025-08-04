@@ -2,7 +2,8 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { PageContent } from "@/types/book";
 import { getTemplateById } from "@/lib/templates";
-import { Plus } from "lucide-react";
+import { Plus, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface PageCanvasProps {
   pageContent?: PageContent;
@@ -10,6 +11,7 @@ interface PageCanvasProps {
   onContentUpdate?: (content: PageContent) => void;
   onTemplateApply?: (template: any, position: 'left' | 'right') => void;
   onContentSelect?: (content: PageContent) => void;
+  onContentDelete?: (contentId: string) => void;
 }
 
 export default function PageCanvas({ 
@@ -17,7 +19,8 @@ export default function PageCanvas({
   position, 
   onContentUpdate, 
   onTemplateApply,
-  onContentSelect 
+  onContentSelect,
+  onContentDelete
 }: PageCanvasProps) {
   const [isDragOver, setIsDragOver] = useState(false);
 
@@ -63,11 +66,27 @@ export default function PageCanvas({
     }
 
     return (
-      <div 
-        onClick={() => onContentSelect?.(pageContent)}
-        className="cursor-pointer h-full"
-      >
-        {template.content(pageContent.content)}
+      <div className="relative h-full group">
+        <div 
+          onClick={() => onContentSelect?.(pageContent)}
+          className="cursor-pointer h-full"
+        >
+          {template.content(pageContent.content)}
+        </div>
+        {onContentDelete && (
+          <Button
+            variant="destructive"
+            size="sm"
+            className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-1 h-6 w-6"
+            onClick={(e) => {
+              e.stopPropagation();
+              onContentDelete(pageContent.id);
+            }}
+            data-testid={`button-delete-${pageContent.id}`}
+          >
+            <X size={12} />
+          </Button>
+        )}
       </div>
     );
   };

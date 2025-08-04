@@ -67,6 +67,33 @@ export default function EditorPage() {
     });
   };
 
+  const handleContentDelete = (contentId: string) => {
+    if (!currentProject) return;
+
+    const updatedPages = [...currentProject.pages];
+    const currentPage = updatedPages[currentPageIndex];
+    
+    if (currentPage.left?.id === contentId) {
+      currentPage.left = undefined;
+    } else if (currentPage.right?.id === contentId) {
+      currentPage.right = undefined;
+    }
+
+    const updatedProject = {
+      ...currentProject,
+      pages: updatedPages
+    };
+
+    setCurrentProject(updatedProject);
+    LocalStorage.saveProject(updatedProject);
+    setSelectedContent(undefined);
+
+    toast({
+      title: "Layout Removed",
+      description: "The selected layout has been deleted."
+    });
+  };
+
   const handleContentUpdate = (content: PageContent) => {
     if (!currentProject) return;
 
@@ -194,6 +221,7 @@ export default function EditorPage() {
                 onContentUpdate={handleContentUpdate}
                 onTemplateApply={handleTemplateApply}
                 onContentSelect={setSelectedContent}
+                onContentDelete={handleContentDelete}
               />
               <PageCanvas
                 pageContent={currentPage.right}
@@ -201,6 +229,7 @@ export default function EditorPage() {
                 onContentUpdate={handleContentUpdate}
                 onTemplateApply={handleTemplateApply}
                 onContentSelect={setSelectedContent}
+                onContentDelete={handleContentDelete}
               />
             </motion.div>
 

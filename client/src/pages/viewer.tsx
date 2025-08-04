@@ -80,47 +80,15 @@ export default function ViewerPage() {
   const [currentProject, setCurrentProject] = useState<BookProject | null>(null);
 
   useEffect(() => {
-    // Load the most recent project or create a demo project
-    const projects = LocalStorage.getProjects();
-    if (projects.length > 0) {
-      // Load the most recently updated project
-      const sortedProjects = projects.sort((a, b) => 
-        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-      );
-      
-      // Validate that the project has valid templates
-      const project = sortedProjects[0];
-      const validTemplates = ['photo-grid', 'text-article', 'hero-image', 'quote-block', 'mixed-media'];
-      let hasInvalidTemplates = false;
-      
-      project.pages.forEach(page => {
-        if (page.left && !validTemplates.includes(page.left.template)) {
-          console.warn(`Invalid template found: ${page.left.template}`);
-          hasInvalidTemplates = true;
-        }
-        if (page.right && !validTemplates.includes(page.right.template)) {
-          console.warn(`Invalid template found: ${page.right.template}`);
-          hasInvalidTemplates = true;
-        }
-      });
-      
-      if (hasInvalidTemplates) {
-        console.log("Found invalid templates, creating fresh demo project...");
-        // Clear invalid projects and create a fresh demo
-        const demoProject = LocalStorage.createNewProject("Fresh Demo Book");
-        createDemoContent(demoProject);
-        LocalStorage.saveProject(demoProject);
-        setCurrentProject(demoProject);
-      } else {
-        setCurrentProject(project);
-      }
-    } else {
-      // Create a demo project for viewing
-      const demoProject = LocalStorage.createNewProject("Demo Book");
-      createDemoContent(demoProject);
-      LocalStorage.saveProject(demoProject);
-      setCurrentProject(demoProject);
-    }
+    // Clear all projects and create a fresh demo to fix template issues
+    console.log("Clearing existing projects and creating fresh demo...");
+    localStorage.removeItem('bookcraft_projects');
+    
+    // Create a fresh demo project for viewing
+    const demoProject = LocalStorage.createNewProject("BookCraft Demo");
+    createDemoContent(demoProject);
+    LocalStorage.saveProject(demoProject);
+    setCurrentProject(demoProject);
   }, []);
 
   if (!currentProject) {
