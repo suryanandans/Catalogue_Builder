@@ -15,6 +15,8 @@ export default function BookViewer({ project, onPageChange }: BookViewerProps) {
   const [isFlipping, setIsFlipping] = useState(false);
   const [flipDirection, setFlipDirection] = useState<'next' | 'prev'>('next');
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragProgress, setDragProgress] = useState(0);
 
   const totalPages = project.pages.length;
   const currentPage = project.pages[currentPageIndex];
@@ -35,12 +37,51 @@ export default function BookViewer({ project, onPageChange }: BookViewerProps) {
     setFlipDirection(direction);
     setIsFlipping(true);
     
-    // Realistic page flip timing
-    await new Promise(resolve => setTimeout(resolve, 1200));
+    // More realistic page flip timing with staged animation
+    await new Promise(resolve => setTimeout(resolve, 800));
     
     setCurrentPageIndex(newIndex);
     onPageChange?.(newIndex);
+    
+    // Complete the flip animation
+    await new Promise(resolve => setTimeout(resolve, 400));
     setIsFlipping(false);
+  };
+
+  const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
+    if (isFlipping) return;
+    setIsDragging(true);
+  };
+
+  const handleDragMove = (e: React.MouseEvent | React.TouchEvent) => {
+    if (!isDragging || isFlipping) return;
+    
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const progress = Math.max(0, Math.min(1, Math.abs(clientX - centerX) / (rect.width / 2)));
+    
+    setDragProgress(progress);
+  };
+
+  const handleDragEnd = (e: React.MouseEvent | React.TouchEvent) => {
+    if (!isDragging) return;
+    
+    setIsDragging(false);
+    
+    if (dragProgress > 0.3) {
+      const clientX = 'changedTouches' in e ? e.changedTouches[0].clientX : (e as React.MouseEvent).clientX;
+      const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      
+      if (clientX > centerX) {
+        flipPage('next');
+      } else {
+        flipPage('prev');
+      }
+    }
+    
+    setDragProgress(0);
   };
 
   const toggleFullscreen = () => {
@@ -110,7 +151,16 @@ export default function BookViewer({ project, onPageChange }: BookViewerProps) {
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="relative" style={{ perspective: "2000px", perspectiveOrigin: "center center" }}>
           {/* Book Container */}
-          <div className="relative book-container" style={{ transformStyle: "preserve-3d" }}>
+          <div 
+            className="relative book-container cursor-grab active:cursor-grabbing" 
+            style={{ transformStyle: "preserve-3d" }}
+            onMouseDown={handleDragStart}
+            onMouseMove={handleDragMove}
+            onMouseUp={handleDragEnd}
+            onTouchStart={handleDragStart}
+            onTouchMove={handleDragMove}
+            onTouchEnd={handleDragEnd}
+          >
             {/* Book Base (Always visible) */}
             <div className="flex relative" style={{ transformStyle: "preserve-3d" }}>
               {/* Back/Left Page (static) */}
@@ -123,117 +173,143 @@ export default function BookViewer({ project, onPageChange }: BookViewerProps) {
                 {renderPageContent(currentPage?.left, 'left')}
               </div>
 
-              {/* Flipping Page Overlay */}
+              {/* Realistic Page Flip Animation */}
               <AnimatePresence>
                 {isFlipping && (
                   <motion.div
-                    className={`absolute top-0 book-page-flip bg-white w-96 h-96 p-8 ${
-                      flipDirection === 'next' 
-                        ? 'left-0 border-r border-gray-200' 
-                        : 'right-0 border-l border-gray-200'
+                    className={`absolute top-0 w-96 h-96 ${
+                      flipDirection === 'next' ? 'left-0' : 'right-0'
                     }`}
                     style={{ 
-                      transformOrigin: flipDirection === 'next' ? "right center" : "left center",
                       transformStyle: "preserve-3d",
-                      zIndex: 10,
-                      borderTopLeftRadius: flipDirection === 'next' ? "12px" : "0px",
-                      borderBottomLeftRadius: flipDirection === 'next' ? "12px" : "0px",
-                      borderTopRightRadius: flipDirection === 'prev' ? "12px" : "0px",
-                      borderBottomRightRadius: flipDirection === 'prev' ? "12px" : "0px",
-                      boxShadow: "0 0 30px rgba(0,0,0,0.4)"
-                    }}
-                    initial={{ 
-                      rotateY: 0,
-                      scale: 1,
-                      boxShadow: "0 0 20px rgba(0,0,0,0.2)"
-                    }}
-                    animate={{ 
-                      rotateY: flipDirection === 'next' ? -180 : 180,
-                      scale: 1.02,
-                      boxShadow: flipDirection === 'next' 
-                        ? "20px 20px 60px rgba(0,0,0,0.5)"
-                        : "-20px 20px 60px rgba(0,0,0,0.5)"
-                    }}
-                    exit={{ 
-                      rotateY: flipDirection === 'next' ? -180 : 180,
-                      scale: 1,
-                      opacity: 0
-                    }}
-                    transition={{ 
-                      duration: 1.2, 
-                      ease: [0.25, 0.46, 0.45, 0.94],
-                      scale: { duration: 0.6 },
-                      boxShadow: { duration: 0.8 }
+                      zIndex: 15,
+                      perspective: "1200px"
                     }}
                   >
-                    {/* Front side of flipping page */}
-                    <div className="absolute inset-0 p-8" style={{ backfaceVisibility: "hidden" }}>
-                      {flipDirection === 'next' 
-                        ? renderPageContent(currentPage?.left, 'left')
-                        : renderPageContent(currentPage?.right, 'right')
-                      }
-                    </div>
-                    
-                    {/* Back side of flipping page */}
-                    <div 
-                      className="absolute inset-0 p-8 bg-white" 
-                      style={{ 
-                        transform: "rotateY(180deg)",
-                        backfaceVisibility: "hidden",
-                        borderTopRightRadius: flipDirection === 'next' ? "12px" : "0px",
-                        borderBottomRightRadius: flipDirection === 'next' ? "12px" : "0px",
-                        borderTopLeftRadius: flipDirection === 'prev' ? "12px" : "0px",
-                        borderBottomLeftRadius: flipDirection === 'prev' ? "12px" : "0px"
-                      }}
-                    >
-                      {/* Next/Previous page content preview */}
-                      <div className="opacity-90">
-                        {flipDirection === 'next' && currentPageIndex < totalPages - 1 
-                          ? renderPageContent(project.pages[currentPageIndex + 1]?.left, 'left')
-                          : flipDirection === 'prev' && currentPageIndex > 0
-                          ? renderPageContent(project.pages[currentPageIndex - 1]?.right, 'right')
-                          : null
-                        }
-                      </div>
-                    </div>
-
-                    {/* Page fold highlight and shadow */}
-                    <div 
-                      className={`absolute top-0 w-1 h-full ${
-                        flipDirection === 'next' 
-                          ? 'right-0 bg-gradient-to-r from-transparent to-black/20' 
-                          : 'left-0 bg-gradient-to-l from-transparent to-black/20'
-                      }`}
-                      style={{ 
-                        transform: "translateZ(1px)",
-                        borderTopRightRadius: flipDirection === 'next' ? "12px" : "0px",
-                        borderBottomRightRadius: flipDirection === 'next' ? "12px" : "0px",
-                        borderTopLeftRadius: flipDirection === 'prev' ? "12px" : "0px",
-                        borderBottomLeftRadius: flipDirection === 'prev' ? "12px" : "0px"
-                      }}
-                    />
-
-                    {/* Curling corner effect */}
+                    {/* Flipping Page with Realistic Curl */}
                     <motion.div
-                      className={`absolute ${
-                        flipDirection === 'next' ? 'top-0 right-0' : 'top-0 left-0'
-                      } w-8 h-8 bg-gradient-to-br from-white to-gray-100`}
+                      className="page-flip-container absolute inset-0"
                       style={{
-                        clipPath: flipDirection === 'next' 
-                          ? "polygon(0 0, 100% 0, 0 100%)"
-                          : "polygon(100% 0, 100% 100%, 0 0)",
-                        borderTopRightRadius: flipDirection === 'next' ? "12px" : "0px",
-                        borderTopLeftRadius: flipDirection === 'prev' ? "12px" : "0px",
-                        boxShadow: "0 2px 8px rgba(0,0,0,0.3)"
+                        transformOrigin: flipDirection === 'next' ? "right center" : "left center",
+                        transformStyle: "preserve-3d"
+                      }}
+                      initial={{ 
+                        rotateY: 0,
+                        scale: 1
                       }}
                       animate={{
-                        scale: [1, 1.1, 1],
-                        opacity: [0.8, 1, 0.8]
+                        rotateY: flipDirection === 'next' ? [-10, -45, -90, -135, -170, -180] : [10, 45, 90, 135, 170, 180],
+                        scale: [1, 1.01, 1.03, 1.02, 1.01, 1],
                       }}
                       transition={{
-                        duration: 1.2,
-                        repeat: 0,
-                        ease: "easeInOut"
+                        duration: 0.8,
+                        times: [0, 0.2, 0.4, 0.6, 0.8, 1],
+                        ease: [0.25, 0.1, 0.25, 1]
+                      }}
+                    >
+                      {/* Page Front Side */}
+                      <div 
+                        className="absolute inset-0 page-surface bg-white p-8 shadow-2xl"
+                        style={{ 
+                          backfaceVisibility: "hidden",
+                          borderRadius: flipDirection === 'next' ? "12px 0 0 12px" : "0 12px 12px 0",
+                          background: "linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%)"
+                        }}
+                      >
+                        {flipDirection === 'next' 
+                          ? renderPageContent(currentPage?.left, 'left')
+                          : renderPageContent(currentPage?.right, 'right')
+                        }
+
+                        {/* Page curl shadow */}
+                        <motion.div
+                          className={`absolute inset-0 pointer-events-none ${
+                            flipDirection === 'next' ? 'curl-shadow-right' : 'curl-shadow-left'
+                          }`}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: [0, 0.3, 0.6, 0.4, 0.2, 0] }}
+                          transition={{ 
+                            duration: 0.8,
+                            times: [0, 0.2, 0.4, 0.6, 0.8, 1]
+                          }}
+                        />
+                      </div>
+
+                      {/* Page Back Side */}
+                      <div 
+                        className="absolute inset-0 page-surface bg-white p-8 shadow-2xl"
+                        style={{ 
+                          transform: "rotateY(180deg)",
+                          backfaceVisibility: "hidden",
+                          borderRadius: flipDirection === 'next' ? "0 12px 12px 0" : "12px 0 0 12px",
+                          background: "linear-gradient(145deg, #f8f9fa 0%, #ffffff 100%)"
+                        }}
+                      >
+                        <div className="transform scale-x-[-1]">
+                          {flipDirection === 'next' && currentPageIndex < totalPages - 1 
+                            ? renderPageContent(project.pages[currentPageIndex + 1]?.left, 'left')
+                            : flipDirection === 'prev' && currentPageIndex > 0
+                            ? renderPageContent(project.pages[currentPageIndex - 1]?.right, 'right')
+                            : null
+                          }
+                        </div>
+                      </div>
+
+                      {/* Dynamic Page Curl Corner */}
+                      <motion.div
+                        className={`absolute w-12 h-12 ${
+                          flipDirection === 'next' ? 'top-0 right-0' : 'top-0 left-0'
+                        }`}
+                        style={{
+                          background: "linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(240,240,240,0.8) 100%)",
+                          clipPath: flipDirection === 'next' 
+                            ? "polygon(0 0, 100% 0, 0 100%)"
+                            : "polygon(100% 0, 100% 100%, 0 0)",
+                          borderRadius: flipDirection === 'next' ? "0 12px 0 0" : "12px 0 0 0",
+                          boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+                          zIndex: 1
+                        }}
+                        animate={{
+                          scale: [1, 1.2, 1.4, 1.2, 1.1, 1],
+                          rotate: flipDirection === 'next' ? [0, -5, -10, -8, -3, 0] : [0, 5, 10, 8, 3, 0]
+                        }}
+                        transition={{
+                          duration: 0.8,
+                          times: [0, 0.2, 0.4, 0.6, 0.8, 1],
+                          ease: "easeInOut"
+                        }}
+                      />
+
+                      {/* Page Bend Highlight */}
+                      <motion.div
+                        className={`absolute top-0 bottom-0 w-1 ${
+                          flipDirection === 'next' ? 'right-0' : 'left-0'
+                        }`}
+                        style={{
+                          background: "linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.8) 20%, rgba(255,255,255,0.9) 50%, rgba(255,255,255,0.8) 80%, transparent 100%)",
+                          zIndex: 2
+                        }}
+                        animate={{
+                          scaleY: [0.8, 1.1, 1.3, 1.1, 0.9, 0.8],
+                          opacity: [0.3, 0.7, 1, 0.8, 0.5, 0.3]
+                        }}
+                        transition={{
+                          duration: 0.8,
+                          ease: "easeInOut"
+                        }}
+                      />
+                    </motion.div>
+
+                    {/* Cast Shadow on Opposite Page */}
+                    <motion.div
+                      className={`absolute inset-0 pointer-events-none ${
+                        flipDirection === 'next' ? 'shadow-cast-left' : 'shadow-cast-right'
+                      }`}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: [0, 0.1, 0.3, 0.2, 0.1, 0] }}
+                      transition={{
+                        duration: 0.8,
+                        times: [0, 0.2, 0.4, 0.6, 0.8, 1]
                       }}
                     />
                   </motion.div>
