@@ -4,7 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LocalStorage } from "@/lib/storage";
 import { BookProject } from "@/types/book";
-import BookViewer from "@/components/book-viewer";
+import BookViewer from "@/components/book-viewer-dual";
 
 export default function ViewerPage() {
   const [, navigate] = useLocation();
@@ -100,7 +100,7 @@ export default function ViewerPage() {
       {/* Book Viewer Component */}
       <BookViewer 
         project={currentProject}
-        onPageChange={(pageIndex) => console.log("Page changed to:", pageIndex)}
+        onPageChange={(spreadIndex) => console.log("Spread changed to:", spreadIndex)}
       />
     </div>
   );
