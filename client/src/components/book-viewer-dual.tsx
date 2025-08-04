@@ -63,14 +63,14 @@ export default function BookViewer({ project, onPageChange }: BookViewerProps) {
     setFlipDirection(direction);
     setIsFlipping(true);
     
-    // Enhanced page flip timing for dual-page spread
-    await new Promise(resolve => setTimeout(resolve, 1200));
+    // Enhanced page flip timing for dual-page spread (2x faster)
+    await new Promise(resolve => setTimeout(resolve, 600));
     
     setCurrentSpreadIndex(newSpreadIndex);
     onPageChange?.(newSpreadIndex * 2);
     
     // Complete the flip animation
-    await new Promise(resolve => setTimeout(resolve, 600));
+    await new Promise(resolve => setTimeout(resolve, 300));
     setIsFlipping(false);
   };
 
@@ -129,10 +129,28 @@ export default function BookViewer({ project, onPageChange }: BookViewerProps) {
 
     const template = getTemplateById(content.template);
     if (!template) {
-      return <div className="text-red-500">Template not found</div>;
+      return (
+        <div className="flex items-center justify-center h-full text-red-500 text-sm">
+          <div className="text-center">
+            <p>Template not found: {content.template}</p>
+            <p className="text-xs mt-1">Available templates: photo-grid, text-article, hero-image, quote-block, mixed-media</p>
+          </div>
+        </div>
+      );
     }
 
-    return template.content(content.content);
+    try {
+      return template.content(content.content || template.defaultProps);
+    } catch (error) {
+      return (
+        <div className="flex items-center justify-center h-full text-red-500 text-sm">
+          <div className="text-center">
+            <p>Error rendering template</p>
+            <p className="text-xs mt-1">{String(error)}</p>
+          </div>
+        </div>
+      );
+    }
   };
 
   useEffect(() => {
@@ -236,7 +254,7 @@ export default function BookViewer({ project, onPageChange }: BookViewerProps) {
                       scale: [1, 1.02, 1.05, 1.08, 1.05, 1.02, 1],
                     }}
                     transition={{
-                      duration: 1.2,
+                      duration: 0.6,
                       times: [0, 0.15, 0.3, 0.5, 0.7, 0.85, 1],
                       ease: [0.25, 0.1, 0.25, 1]
                     }}
@@ -325,7 +343,7 @@ export default function BookViewer({ project, onPageChange }: BookViewerProps) {
                         rotate: flipDirection === 'next' ? [0, -8, -15, -12, -5, 0] : [0, 8, 15, 12, 5, 0]
                       }}
                       transition={{
-                        duration: 1.2,
+                        duration: 0.6,
                         times: [0, 0.2, 0.4, 0.6, 0.8, 1],
                         ease: "easeInOut"
                       }}
@@ -339,7 +357,7 @@ export default function BookViewer({ project, onPageChange }: BookViewerProps) {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: [0, 0.15, 0.4, 0.3, 0.15, 0] }}
                       transition={{
-                        duration: 1.2,
+                        duration: 0.6,
                         times: [0, 0.2, 0.4, 0.6, 0.8, 1]
                       }}
                     />

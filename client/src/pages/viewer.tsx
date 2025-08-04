@@ -61,6 +61,29 @@ export default function ViewerPage() {
             },
             position: "right"
           }
+        },
+        {
+          id: "demo-page-3",
+          left: {
+            id: "demo-left-3",
+            template: "mixed-media",
+            content: {
+              title: "Mixed Content Example",
+              content: "This demonstrates how text and media can work together in a cohesive layout.",
+              mediaUrl: null,
+              mediaType: null
+            },
+            position: "left"
+          },
+          right: {
+            id: "demo-right-3",
+            template: "text-article",
+            content: {
+              title: "Chapter 2: Features",
+              content: "Explore the powerful features of BookCraft including drag-and-drop editing, realistic page animations, and mobile-responsive design."
+            },
+            position: "right"
+          }
         }
       ];
       
