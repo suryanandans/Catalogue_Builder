@@ -18,18 +18,30 @@ export default function EditorPage() {
   const [selectedContent, setSelectedContent] = useState<PageContent | undefined>();
 
   useEffect(() => {
-    // Load the most recent project
-    const projects = LocalStorage.getProjects();
-    if (projects.length > 0) {
-      // Load the most recently updated project
-      const sortedProjects = projects.sort((a, b) => 
-        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-      );
-      setCurrentProject(sortedProjects[0]);
-    } else {
-      // Create a new project if none exist
-      const newProject = LocalStorage.createNewProject("My Digital Book");
+    // Check if we should create a new project (from URL params or other triggers)
+    const urlParams = new URLSearchParams(window.location.search);
+    const shouldCreateNew = urlParams.get('new') === 'true';
+    
+    if (shouldCreateNew) {
+      // Create a brand new project
+      const newProject = LocalStorage.createNewProject("My New Book");
       setCurrentProject(newProject);
+      // Clean up URL
+      window.history.replaceState({}, '', window.location.pathname);
+    } else {
+      // Load the most recent project
+      const projects = LocalStorage.getProjects();
+      if (projects.length > 0) {
+        // Load the most recently updated project
+        const sortedProjects = projects.sort((a, b) => 
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+        );
+        setCurrentProject(sortedProjects[0]);
+      } else {
+        // Create a new project if none exist
+        const newProject = LocalStorage.createNewProject("My Digital Book");
+        setCurrentProject(newProject);
+      }
     }
   }, []);
 
@@ -193,6 +205,32 @@ export default function EditorPage() {
                 <Redo size={16} />
               </Button>
               <div className="border-l border-gray-300 h-6 mx-2"></div>
+              
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  const newProject = LocalStorage.createNewProject("Untitled Book");
+                  setCurrentProject(newProject);
+                  setCurrentPageIndex(0);
+                  setSelectedContent(undefined);
+                  toast({
+                    title: "New Project Created",
+                    description: "Started a fresh book project."
+                  });
+                }} 
+                data-testid="button-new-project"
+              >
+                New Project
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                onClick={() => navigate("/")} 
+                data-testid="button-cancel"
+              >
+                Cancel
+              </Button>
+              
               <Button variant="outline" onClick={handleSave} data-testid="button-save">
                 <Save className="mr-2" size={16} />
                 Save

@@ -80,15 +80,48 @@ export default function ViewerPage() {
   const [currentProject, setCurrentProject] = useState<BookProject | null>(null);
 
   useEffect(() => {
-    // Clear all projects and create a fresh demo to fix template issues
-    console.log("Clearing existing projects and creating fresh demo...");
-    localStorage.removeItem('bookcraft_projects');
+    // Load user projects first, fallback to demo if none exist
+    const projects = LocalStorage.getProjects();
     
-    // Create a fresh demo project for viewing
-    const demoProject = LocalStorage.createNewProject("BookCraft Demo");
-    createDemoContent(demoProject);
-    LocalStorage.saveProject(demoProject);
-    setCurrentProject(demoProject);
+    if (projects.length > 0) {
+      // Load the most recently updated project
+      const sortedProjects = projects.sort((a, b) => 
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+      );
+      
+      // Validate that the project has valid templates
+      const project = sortedProjects[0];
+      const validTemplates = ['photo-grid', 'text-article', 'hero-image', 'quote-block', 'mixed-media'];
+      let hasInvalidTemplates = false;
+      
+      project.pages.forEach(page => {
+        if (page.left && !validTemplates.includes(page.left.template)) {
+          console.warn(`Invalid template found: ${page.left.template}`);
+          hasInvalidTemplates = true;
+        }
+        if (page.right && !validTemplates.includes(page.right.template)) {
+          console.warn(`Invalid template found: ${page.right.template}`);
+          hasInvalidTemplates = true;
+        }
+      });
+      
+      if (hasInvalidTemplates) {
+        console.log("Found invalid templates, creating fresh demo project...");
+        // Create demo only if templates are invalid
+        const demoProject = LocalStorage.createNewProject("BookCraft Demo");
+        createDemoContent(demoProject);
+        LocalStorage.saveProject(demoProject);
+        setCurrentProject(demoProject);
+      } else {
+        setCurrentProject(project);
+      }
+    } else {
+      // Create a demo project only if no projects exist
+      const demoProject = LocalStorage.createNewProject("BookCraft Demo");
+      createDemoContent(demoProject);
+      LocalStorage.saveProject(demoProject);
+      setCurrentProject(demoProject);
+    }
   }, []);
 
   if (!currentProject) {
@@ -115,6 +148,25 @@ export default function ViewerPage() {
               <ArrowLeft className="mr-2" size={16} />
               Back to Editor
             </Button>
+            
+            <select
+              onChange={(e) => {
+                const projects = LocalStorage.getProjects();
+                const selectedProject = projects.find(p => p.id === e.target.value);
+                if (selectedProject) {
+                  setCurrentProject(selectedProject);
+                }
+              }}
+              value={currentProject.id}
+              className="bg-black/30 text-white border border-white/20 rounded px-3 py-1 text-sm"
+              data-testid="select-project"
+            >
+              {LocalStorage.getProjects().map(project => (
+                <option key={project.id} value={project.id} className="text-black">
+                  {project.title}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
       </div>

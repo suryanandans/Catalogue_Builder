@@ -77,9 +77,8 @@ export default function LandingPage() {
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button 
                   onClick={() => {
-                    // Create a new project when starting to create
-                    const newProject = LocalStorage.createNewProject("My New Book");
-                    navigate("/editor");
+                    // Navigate to editor with new project flag
+                    navigate("/editor?new=true");
                   }}
                   size="lg"
                   className="bg-bookcraft-primary hover:bg-blue-700 text-white px-8 py-4 text-lg font-semibold shadow-lg hover:scale-105 transition-all"
