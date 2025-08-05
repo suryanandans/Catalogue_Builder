@@ -18,9 +18,9 @@ export default function EditorPage() {
   const [selectedContent, setSelectedContent] = useState<PageContent | undefined>();
 
   useEffect(() => {
-    // Check if we should create a new project (from URL params or other triggers)
     const urlParams = new URLSearchParams(window.location.search);
     const shouldCreateNew = urlParams.get('new') === 'true';
+    const projectId = urlParams.get('projectId');
     
     if (shouldCreateNew) {
       // Create a brand new project
@@ -28,22 +28,36 @@ export default function EditorPage() {
       setCurrentProject(newProject);
       // Clean up URL
       window.history.replaceState({}, '', window.location.pathname);
+    } else if (projectId) {
+      // Load specific project by ID
+      const project = LocalStorage.getProject(projectId);
+      if (project) {
+        setCurrentProject(project);
+      } else {
+        // Project not found, redirect to My Books
+        navigate("/my-books");
+        return;
+      }
+      // Clean up URL
+      window.history.replaceState({}, '', window.location.pathname);
     } else {
-      // Load the most recent project
+      // Load the most recent project or create new one
       const projects = LocalStorage.getProjects();
-      if (projects.length > 0) {
-        // Load the most recently updated project
-        const sortedProjects = projects.sort((a, b) => 
+      const userProjects = projects.filter(p => !p.title.includes("Demo"));
+      
+      if (userProjects.length > 0) {
+        // Load the most recently updated user project
+        const sortedProjects = userProjects.sort((a, b) => 
           new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
         );
         setCurrentProject(sortedProjects[0]);
       } else {
-        // Create a new project if none exist
-        const newProject = LocalStorage.createNewProject("My Digital Book");
-        setCurrentProject(newProject);
+        // No user projects exist, redirect to My Books to create one
+        navigate("/my-books");
+        return;
       }
     }
-  }, []);
+  }, [navigate]);
 
   const handleTemplateApply = (template: Template, position: 'left' | 'right') => {
     if (!currentProject) return;
@@ -149,7 +163,7 @@ export default function EditorPage() {
   const handlePreview = () => {
     if (currentProject) {
       LocalStorage.saveProject(currentProject);
-      navigate("/viewer");
+      navigate(`/viewer?projectId=${currentProject.id}`);
     }
   };
 
@@ -236,10 +250,10 @@ export default function EditorPage() {
               
               <Button 
                 variant="outline" 
-                onClick={() => navigate("/")} 
-                data-testid="button-cancel"
+                onClick={() => navigate("/my-books")} 
+                data-testid="button-back-to-books"
               >
-                Cancel
+                My Books
               </Button>
               
               <Button variant="outline" onClick={handleSave} data-testid="button-save">

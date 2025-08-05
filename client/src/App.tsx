@@ -3,11 +3,13 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { Book, Edit, Eye } from "lucide-react";
+import { Book, Edit, Eye, Library } from "lucide-react";
 import { motion } from "framer-motion";
 import LandingPage from "@/pages/landing";
 import EditorPage from "@/pages/editor";
 import ViewerPage from "@/pages/viewer";
+import MyBooksPage from "@/pages/my-books";
+import DemoViewerPage from "@/pages/demo-viewer";
 import NotFound from "@/pages/not-found";
 
 function Navigation() {
@@ -15,8 +17,8 @@ function Navigation() {
 
   const navItems = [
     { path: "/", label: "Home", icon: Book },
+    { path: "/my-books", label: "My Books", icon: Library },
     { path: "/editor", label: "Editor", icon: Edit },
-    { path: "/viewer", label: "Viewer", icon: Eye },
   ];
 
   return (
@@ -43,9 +45,17 @@ function Navigation() {
               ))}
             </div>
           </div>
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-3">
             <button 
-              onClick={() => navigate("/editor")}
+              onClick={() => navigate("/my-books")}
+              className="border-2 border-bookcraft-primary text-bookcraft-primary px-4 py-2 rounded-lg font-medium hover:bg-bookcraft-primary hover:text-white transition-colors"
+              data-testid="button-my-books"
+            >
+              <Library className="inline mr-2" size={16} />
+              My Books
+            </button>
+            <button 
+              onClick={() => navigate("/editor?new=true")}
               className="bg-bookcraft-primary text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
               data-testid="button-new-project"
             >
@@ -63,8 +73,10 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={LandingPage} />
+      <Route path="/my-books" component={MyBooksPage} />
       <Route path="/editor" component={EditorPage} />
       <Route path="/viewer" component={ViewerPage} />
+      <Route path="/demo" component={DemoViewerPage} />
       <Route component={NotFound} />
     </Switch>
   );

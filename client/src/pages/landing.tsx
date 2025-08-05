@@ -88,7 +88,7 @@ export default function LandingPage() {
                   Start Creating
                 </Button>
                 <Button 
-                  onClick={() => navigate("/viewer")}
+                  onClick={() => navigate("/demo")}
                   variant="outline"
                   size="lg"
                   className="border-2 border-bookcraft-primary text-bookcraft-primary hover:bg-bookcraft-primary hover:text-white px-8 py-4 text-lg font-semibold transition-all"

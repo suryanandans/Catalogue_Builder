@@ -85,44 +85,45 @@ export default function ViewerPage() {
   const [currentProject, setCurrentProject] = useState<BookProject | null>(null);
 
   useEffect(() => {
-    // Load user projects first, fallback to demo if none exist
-    const projects = LocalStorage.getProjects();
-    console.log("Viewer: Found projects:", projects.length, projects);
+    const urlParams = new URLSearchParams(window.location.search);
+    const projectId = urlParams.get('projectId');
     
-    if (projects.length > 0) {
-      // Load the most recently updated project
-      const sortedProjects = projects.sort((a, b) => 
-        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-      );
-      
-      const project = sortedProjects[0];
-      console.log("Viewer: Loading project:", project.title, project);
-      
-      // Log the project structure for debugging
-      project.pages.forEach((page, index) => {
-        console.log(`Page ${index}:`, {
-          left: page.left ? { template: page.left.template, content: page.left.content } : null,
-          right: page.right ? { template: page.right.template, content: page.right.content } : null
-        });
-      });
-      
-      // If project has no content, add demo content to show functionality
-      if (project.pages.length === 1 && !project.pages[0].left && !project.pages[0].right) {
-        console.log("Viewer: Project is empty, adding demo content");
-        createDemoContent(project);
-        LocalStorage.saveProject(project);
+    if (projectId) {
+      // Load specific project by ID
+      const project = LocalStorage.getProject(projectId);
+      if (project) {
+        console.log("Viewer: Loading specific project:", project.title, project);
+        setCurrentProject(project);
+      } else {
+        // Project not found, redirect to My Books
+        navigate("/my-books");
+        return;
       }
-      
-      setCurrentProject(project);
     } else {
-      // Create a demo project only if no projects exist
-      console.log("Viewer: No projects found, creating demo");
-      const demoProject = LocalStorage.createNewProject("BookCraft Demo");
-      createDemoContent(demoProject);
-      LocalStorage.saveProject(demoProject);
-      setCurrentProject(demoProject);
+      // Load user projects, show the most recent non-demo project
+      const projects = LocalStorage.getProjects();
+      const userProjects = projects.filter(p => !p.title.includes("Demo"));
+      console.log("Viewer: Found user projects:", userProjects.length, userProjects);
+      
+      if (userProjects.length > 0) {
+        // Load the most recently updated user project
+        const sortedProjects = userProjects.sort((a, b) => 
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+        );
+        
+        const project = sortedProjects[0];
+        console.log("Viewer: Loading most recent project:", project.title, project);
+        setCurrentProject(project);
+      } else {
+        // No user projects exist, redirect to My Books
+        navigate("/my-books");
+        return;
+      }
     }
-  }, []);
+    
+    // Clean up URL
+    window.history.replaceState({}, '', window.location.pathname);
+  }, [navigate]);
 
   if (!currentProject) {
     return (
@@ -141,7 +142,7 @@ export default function ViewerPage() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => navigate("/editor")}
+              onClick={() => navigate(currentProject ? `/editor?projectId=${currentProject.id}` : "/my-books")}
               className="text-white/80 hover:text-white"
               data-testid="button-back-to-editor"
             >
@@ -152,7 +153,8 @@ export default function ViewerPage() {
             <select
               onChange={(e) => {
                 const projects = LocalStorage.getProjects();
-                const selectedProject = projects.find(p => p.id === e.target.value);
+                const userProjects = projects.filter(p => !p.title.includes("Demo"));
+                const selectedProject = userProjects.find(p => p.id === e.target.value);
                 if (selectedProject) {
                   console.log("Viewer: Switching to project:", selectedProject.title, selectedProject);
                   setCurrentProject(selectedProject);
@@ -162,9 +164,9 @@ export default function ViewerPage() {
               className="bg-black/30 text-white border border-white/20 rounded px-3 py-1 text-sm"
               data-testid="select-project"
             >
-              {LocalStorage.getProjects().map(project => (
+              {LocalStorage.getProjects().filter(p => !p.title.includes("Demo")).map(project => (
                 <option key={project.id} value={project.id} className="text-black">
-                  {project.title} ({project.pages.length} pages)
+                  {project.title} ({project.pages.length} spreads)
                 </option>
               ))}
             </select>
