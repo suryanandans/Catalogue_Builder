@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { PageContent } from "@/types/book";
+import { PageContent, MediaLink } from "@/types/book";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,6 +7,7 @@ import { Slider } from "@/components/ui/slider";
 import { Separator } from "@/components/ui/separator";
 import { Upload, Image, Video, Bold, Italic, Underline, Type, Play } from "lucide-react";
 import RichTextEditor from "@/components/rich-text-editor";
+import MediaLinkManager from "@/components/media-link-manager";
 
 interface PropertiesPanelProps {
   selectedContent?: PageContent;
@@ -104,6 +105,87 @@ export default function PropertiesPanel({ selectedContent, onContentUpdate }: Pr
         }
       });
     }
+  };
+
+  const handleMediaLinksUpdate = (mediaLinks: { [mediaId: string]: MediaLink }) => {
+    if (selectedContent && onContentUpdate) {
+      onContentUpdate({
+        ...selectedContent,
+        mediaLinks
+      });
+    }
+  };
+
+  const getMediaItemsForTemplate = () => {
+    if (!selectedContent) return [];
+    
+    const items: Array<{ id: string; type: 'image' | 'video'; url: string; title?: string }> = [];
+    
+    // Hero Image template
+    if (selectedContent.template === 'hero-image' && selectedContent.content.image) {
+      items.push({
+        id: 'hero-image',
+        type: 'image',
+        url: selectedContent.content.image,
+        title: selectedContent.content.title || 'Hero Image'
+      });
+    }
+    
+    // Photo Grid template
+    if (selectedContent.template === 'photo-grid' && selectedContent.content.images) {
+      selectedContent.content.images.forEach((image: string, index: number) => {
+        items.push({
+          id: `grid-image-${index}`,
+          type: 'image',
+          url: image,
+          title: `Grid Image ${index + 1}`
+        });
+      });
+    }
+    
+    // Video Player template
+    if (selectedContent.template === 'video-player' && selectedContent.content.videoUrl) {
+      items.push({
+        id: 'video-player',
+        type: 'video',
+        url: selectedContent.content.videoUrl,
+        title: selectedContent.content.title || 'Video Player'
+      });
+    }
+    
+    // Video Gallery template
+    if (selectedContent.template === 'video-gallery' && selectedContent.content.videos) {
+      selectedContent.content.videos.forEach((video: any, index: number) => {
+        items.push({
+          id: `gallery-video-${index}`,
+          type: 'video',
+          url: video.url,
+          title: video.title || `Gallery Video ${index + 1}`
+        });
+      });
+    }
+    
+    // Mixed Media template
+    if (selectedContent.template === 'mixed-media') {
+      if (selectedContent.content.image) {
+        items.push({
+          id: 'mixed-image',
+          type: 'image',
+          url: selectedContent.content.image,
+          title: 'Mixed Media Image'
+        });
+      }
+      if (selectedContent.content.videoUrl) {
+        items.push({
+          id: 'mixed-video',
+          type: 'video',
+          url: selectedContent.content.videoUrl,
+          title: 'Mixed Media Video'
+        });
+      }
+    }
+    
+    return items;
   };
 
   return (
@@ -459,6 +541,17 @@ export default function PropertiesPanel({ selectedContent, onContentUpdate }: Pr
                       </div>
                     </div>
                   )}
+                </div>
+              )}
+
+              {/* Media Links Section - Show for templates with media */}
+              {selectedContent && ['hero-image', 'photo-grid', 'video-player', 'video-gallery', 'mixed-media'].includes(selectedContent.template) && (
+                <div className="mt-6 pt-6 border-t border-gray-200">
+                  <MediaLinkManager
+                    mediaLinks={selectedContent.mediaLinks || {}}
+                    onMediaLinksUpdate={handleMediaLinksUpdate}
+                    mediaItems={getMediaItemsForTemplate()}
+                  />
                 </div>
               )}
             </>

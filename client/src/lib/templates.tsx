@@ -1,6 +1,7 @@
 import React from "react";
 import { Template } from "@/types/book";
 import { Grid, FileText, Image, Quote, Image as ImageIcon, Play, Video } from "lucide-react";
+import MediaWithEyeIcon from "@/components/media-with-eye-icon";
 
 export const templates: Template[] = [
   {
@@ -16,13 +17,19 @@ export const templates: Template[] = [
       <div className="relative grid grid-cols-2 gap-2 h-full">
         {props.images && props.images.length > 0 ? (
           props.images.slice(0, 4).map((image: string, index: number) => (
-            <img 
+            <MediaWithEyeIcon
               key={index}
-              src={image} 
-              alt={`Grid image ${index + 1}`} 
-              className="bg-gray-200 rounded object-cover w-full h-full"
-              data-testid={`grid-image-${index}`}
-            />
+              mediaId={`grid-image-${index}`}
+              mediaLink={props.mediaLinks?.[`grid-image-${index}`]}
+              className="bg-gray-200 rounded w-full h-full"
+            >
+              <img 
+                src={image} 
+                alt={`Grid image ${index + 1}`} 
+                className="rounded object-cover w-full h-full"
+                data-testid={`grid-image-${index}`}
+              />
+            </MediaWithEyeIcon>
           ))
         ) : (
           [1, 2, 3, 4].map((i) => (
@@ -94,13 +101,19 @@ export const templates: Template[] = [
     content: (props) => (
       <div className="relative h-full w-full">
         {props.image ? (
-          <img 
-            src={props.image} 
-            alt={props.title || "Hero Image"} 
-            className="w-full h-full object-cover"
-            style={{ borderRadius: "4px" }}
-            data-testid="hero-image-display"
-          />
+          <MediaWithEyeIcon
+            mediaId="hero-image"
+            mediaLink={props.mediaLinks?.['hero-image']}
+            className="w-full h-full"
+          >
+            <img 
+              src={props.image} 
+              alt={props.title || "Hero Image"} 
+              className="w-full h-full object-cover"
+              style={{ borderRadius: "4px" }}
+              data-testid="hero-image-display"
+            />
+          </MediaWithEyeIcon>
         ) : (
           <div className="bg-gray-200 w-full h-full flex items-center justify-center" style={{ borderRadius: "4px" }}>
             <div className="text-center text-gray-500">
@@ -183,16 +196,35 @@ export const templates: Template[] = [
         </h3>
         <div className="flex-1 bg-gray-200 rounded-lg flex items-center justify-center min-h-32">
           {props.image ? (
-            <img 
-              src={props.image} 
-              alt="Media content" 
-              className="w-full h-full object-cover rounded-lg"
-              data-testid="mixed-image"
-            />
+            <MediaWithEyeIcon
+              mediaId="mixed-image"
+              mediaLink={props.mediaLinks?.['mixed-image']}
+              className="w-full h-full"
+            >
+              <img 
+                src={props.image} 
+                alt="Media content" 
+                className="w-full h-full object-cover rounded-lg"
+                data-testid="mixed-image"
+              />
+            </MediaWithEyeIcon>
+          ) : props.videoUrl ? (
+            <MediaWithEyeIcon
+              mediaId="mixed-video"
+              mediaLink={props.mediaLinks?.['mixed-video']}
+              className="w-full h-full"
+            >
+              <video 
+                src={props.videoUrl} 
+                controls 
+                className="w-full h-full object-cover rounded-lg"
+                data-testid="mixed-video"
+              />
+            </MediaWithEyeIcon>
           ) : (
             <div className="text-center text-gray-500">
               <ImageIcon className="mx-auto mb-2" size={32} />
-              <p className="text-sm">Click Properties to add image</p>
+              <p className="text-sm">Click Properties to add media</p>
             </div>
           )}
         </div>
@@ -224,13 +256,19 @@ export const templates: Template[] = [
     content: (props) => (
       <div className="relative h-full w-full bg-black rounded-lg overflow-hidden">
         {props.videoUrl ? (
-          <video 
-            src={props.videoUrl} 
-            controls 
-            className="w-full h-full object-cover"
-            data-testid="video-player"
-            poster={props.thumbnail}
-          />
+          <MediaWithEyeIcon
+            mediaId="video-player"
+            mediaLink={props.mediaLinks?.['video-player']}
+            className="w-full h-full"
+          >
+            <video 
+              src={props.videoUrl} 
+              controls 
+              className="w-full h-full object-cover"
+              data-testid="video-player"
+              poster={props.thumbnail}
+            />
+          </MediaWithEyeIcon>
         ) : (
           <div className="bg-gray-900 w-full h-full flex items-center justify-center text-white">
             <div className="text-center">
@@ -295,7 +333,12 @@ export const templates: Template[] = [
         <div className="grid grid-cols-2 gap-2 h-4/5">
           {props.videos && props.videos.length > 0 ? (
             props.videos.slice(0, 4).map((video: any, index: number) => (
-              <div key={index} className="relative bg-black rounded overflow-hidden group cursor-pointer">
+              <MediaWithEyeIcon
+                key={index}
+                mediaId={`gallery-video-${index}`}
+                mediaLink={props.mediaLinks?.[`gallery-video-${index}`]}
+                className="relative bg-black rounded overflow-hidden group cursor-pointer"
+              >
                 <video 
                   src={video.url} 
                   className="w-full h-full object-cover"
@@ -316,7 +359,7 @@ export const templates: Template[] = [
                     <p className="text-white text-xs font-medium truncate">{video.title}</p>
                   </div>
                 )}
-              </div>
+              </MediaWithEyeIcon>
             ))
           ) : (
             [1, 2, 3, 4].map((i) => (

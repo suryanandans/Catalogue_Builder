@@ -1,8 +1,16 @@
+export interface MediaLink {
+  url: string;
+  title?: string;
+}
+
 export interface PageContent {
   id: string;
   template: string;
   content: Record<string, any>;
   position: 'left' | 'right';
+  mediaLinks?: {
+    [mediaId: string]: MediaLink;
+  };
 }
 
 export interface BookPage {

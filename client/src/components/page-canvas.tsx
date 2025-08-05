@@ -71,7 +71,7 @@ export default function PageCanvas({
           onClick={() => onContentSelect?.(pageContent)}
           className="cursor-pointer h-full"
         >
-          {template.content(pageContent.content)}
+          {template.content({ ...pageContent.content, mediaLinks: pageContent.mediaLinks })}
         </div>
         {onContentDelete && (
           <Button
