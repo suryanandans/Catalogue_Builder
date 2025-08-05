@@ -20,8 +20,9 @@ export default function PageCanvas({
   onContentUpdate, 
   onTemplateApply,
   onContentSelect,
-  onContentDelete
-}: PageCanvasProps) {
+  onContentDelete,
+  isPreview = false
+}: PageCanvasProps & { isPreview?: boolean }) {
   const [isDragOver, setIsDragOver] = useState(false);
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -75,6 +76,7 @@ export default function PageCanvas({
             ...pageContent.content,
             mediaLinks: pageContent.mediaLinks,
             eyeIcons: pageContent.eyeIcons || [],
+            isPreview,
             onEyeIconsUpdate: (eyeIcons: any[]) => {
               if (onContentUpdate) {
                 onContentUpdate({

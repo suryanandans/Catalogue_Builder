@@ -7,6 +7,7 @@ export interface EyeIconInstance {
   id: string;
   position: { x: number; y: number };
   mediaLink: MediaLink;
+  size?: number;
 }
 
 export interface PageContent {

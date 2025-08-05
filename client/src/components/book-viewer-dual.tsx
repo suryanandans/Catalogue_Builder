@@ -162,22 +162,22 @@ export default function BookViewer({ project, onPageChange }: BookViewerProps) {
     }
 
     try {
-      const contentData = content.content || template.defaultProps;
+      const contentData = {
+        ...(content.content || template.defaultProps),
+        mediaLinks: content.mediaLinks || {},
+        eyeIcons: content.eyeIcons || [],
+        isPreview: true,
+        onEyeIconsUpdate: () => {} // No-op in preview mode
+      };
       console.log("Viewer: Rendering template content with data:", contentData);
-      // Create read-only version of template content
-      const readOnlyContent = React.cloneElement(
-        template.content(contentData) as React.ReactElement,
-        {
-          style: { pointerEvents: 'none', userSelect: 'none' },
-          contentEditable: false,
-          suppressContentEditableWarning: true
-        }
-      );
+      
+      // Render template content with eye icons enabled for clicking
+      const templateContent = template.content(contentData);
       
       return (
-        <div className="bg-white h-full w-full overflow-hidden" style={{ pointerEvents: 'none', userSelect: 'none' }}>
-          <div className="h-full w-full p-6" style={{ pointerEvents: 'none', userSelect: 'none' }}>
-            {readOnlyContent}
+        <div className="bg-white h-full w-full overflow-hidden">
+          <div className="h-full w-full p-6">
+            {templateContent}
           </div>
         </div>
       );

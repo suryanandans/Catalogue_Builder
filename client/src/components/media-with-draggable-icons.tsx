@@ -7,18 +7,22 @@ interface MediaWithDraggableIconsProps {
   eyeIcons?: EyeIconInstance[];
   onEyeIconsUpdate: (eyeIcons: EyeIconInstance[]) => void;
   className?: string;
+  isPreview?: boolean;
 }
 
 export default function MediaWithDraggableIcons({
   children,
   eyeIcons = [],
   onEyeIconsUpdate,
-  className = ""
+  className = "",
+  isPreview = false
 }: MediaWithDraggableIconsProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isDragOver, setIsDragOver] = useState(false);
 
   const handleDragOver = (e: React.DragEvent) => {
+    if (isPreview) return;
+    
     e.preventDefault();
     e.stopPropagation();
     
@@ -40,6 +44,8 @@ export default function MediaWithDraggableIcons({
   };
 
   const handleDrop = (e: React.DragEvent) => {
+    if (isPreview) return;
+    
     e.preventDefault();
     e.stopPropagation();
     setIsDragOver(false);
@@ -61,7 +67,8 @@ export default function MediaWithDraggableIcons({
           const newEyeIcon: EyeIconInstance = {
             id: crypto.randomUUID(),
             position: { x: constrainedX, y: constrainedY },
-            mediaLink: data.mediaLink
+            mediaLink: data.mediaLink,
+            size: 32
           };
 
           onEyeIconsUpdate([...eyeIcons, newEyeIcon]);
@@ -75,6 +82,13 @@ export default function MediaWithDraggableIcons({
   const handleEyeIconPositionChange = (id: string, position: { x: number; y: number }) => {
     const updatedIcons = eyeIcons.map(icon =>
       icon.id === id ? { ...icon, position } : icon
+    );
+    onEyeIconsUpdate(updatedIcons);
+  };
+
+  const handleEyeIconSizeChange = (id: string, size: number) => {
+    const updatedIcons = eyeIcons.map(icon =>
+      icon.id === id ? { ...icon, size } : icon
     );
     onEyeIconsUpdate(updatedIcons);
   };
@@ -101,9 +115,12 @@ export default function MediaWithDraggableIcons({
           id={eyeIcon.id}
           position={eyeIcon.position}
           mediaLink={eyeIcon.mediaLink}
+          size={eyeIcon.size || 32}
           onPositionChange={handleEyeIconPositionChange}
+          onSizeChange={handleEyeIconSizeChange}
           onRemove={handleEyeIconRemove}
           containerRef={containerRef}
+          isPreview={isPreview}
         />
       ))}
 

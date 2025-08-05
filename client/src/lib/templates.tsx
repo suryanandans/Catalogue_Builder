@@ -28,6 +28,7 @@ export const templates: Template[] = [
                 }
               }}
               className="bg-gray-200 rounded w-full h-full"
+              isPreview={props.isPreview}
             >
               <img 
                 src={image} 
@@ -111,6 +112,7 @@ export const templates: Template[] = [
             eyeIcons={props.eyeIcons || []}
             onEyeIconsUpdate={props.onEyeIconsUpdate || (() => {})}
             className="w-full h-full"
+            isPreview={props.isPreview}
           >
             <img 
               src={props.image} 
@@ -219,6 +221,7 @@ export const templates: Template[] = [
               eyeIcons={props.eyeIcons || []}
               onEyeIconsUpdate={props.onEyeIconsUpdate || (() => {})}
               className="w-full h-full"
+              isPreview={props.isPreview}
             >
               <video 
                 src={props.videoUrl} 
@@ -266,6 +269,7 @@ export const templates: Template[] = [
             eyeIcons={props.eyeIcons || []}
             onEyeIconsUpdate={props.onEyeIconsUpdate || (() => {})}
             className="w-full h-full"
+            isPreview={props.isPreview}
           >
             <video 
               src={props.videoUrl} 
@@ -350,6 +354,7 @@ export const templates: Template[] = [
                   }
                 }}
                 className="relative bg-black rounded overflow-hidden group cursor-pointer"
+                isPreview={props.isPreview}
               >
                 <video 
                   src={video.url} 
