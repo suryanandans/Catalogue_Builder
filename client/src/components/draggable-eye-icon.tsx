@@ -49,7 +49,11 @@ export default function DraggableEyeIcon({
 
       // Use requestAnimationFrame for smoother updates
       requestAnimationFrame(() => {
-        onPositionChange(id, { x: newX, y: newY });
+        try {
+          onPositionChange(id, { x: newX, y: newY });
+        } catch (error) {
+          console.error('Failed to update eye icon position:', error);
+        }
       });
     };
 
@@ -78,7 +82,11 @@ export default function DraggableEyeIcon({
       // Use requestAnimationFrame for smoother resizing
       if (onSizeChange) {
         requestAnimationFrame(() => {
-          onSizeChange(id, newSize);
+          try {
+            onSizeChange(id, newSize);
+          } catch (error) {
+            console.error('Failed to update eye icon size:', error);
+          }
         });
       }
     };

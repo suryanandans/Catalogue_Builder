@@ -13,16 +13,108 @@ export class LocalStorage {
   }
 
   static saveProject(project: BookProject): void {
-    const projects = this.getProjects();
-    const existingIndex = projects.findIndex(p => p.id === project.id);
+    try {
+      const projects = this.getProjects();
+      const existingIndex = projects.findIndex(p => p.id === project.id);
+      
+      if (existingIndex >= 0) {
+        projects[existingIndex] = { ...project, updatedAt: new Date().toISOString() };
+      } else {
+        projects.push(project);
+      }
+      
+      // Check data size and cleanup if needed
+      const serializedData = JSON.stringify(projects);
+      if (serializedData.length > 4.5 * 1024 * 1024) { // 4.5MB threshold
+        console.warn('Storage approaching limit, cleaning up old projects');
+        this.cleanupOldProjects(projects);
+      }
+      
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
+    } catch (error) {
+      if (error instanceof DOMException && error.name === 'QuotaExceededError') {
+        console.error('Storage quota exceeded, attempting cleanup');
+        this.handleQuotaExceeded(project);
+      } else {
+        console.error('Failed to save project:', error);
+        // Don't throw error to prevent UI crashes
+      }
+    }
+  }
+
+  static handleQuotaExceeded(currentProject: BookProject): void {
+    try {
+      const projects = this.getProjects();
+      
+      // Remove old demo projects first
+      let cleanedProjects = projects.filter(p => !p.title.toLowerCase().includes('demo'));
+      
+      // If still too large, keep only the most recent 3 projects plus current
+      if (cleanedProjects.length > 3) {
+        cleanedProjects = cleanedProjects
+          .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+          .slice(0, 3);
+      }
+      
+      // Add current project
+      const index = cleanedProjects.findIndex(p => p.id === currentProject.id);
+      if (index >= 0) {
+        cleanedProjects[index] = currentProject;
+      } else {
+        cleanedProjects.push(currentProject);
+      }
+      
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(cleanedProjects));
+      console.log('Storage cleaned up successfully');
+    } catch (error) {
+      console.error('Failed to cleanup storage:', error);
+      // As last resort, save only current project
+      localStorage.setItem(STORAGE_KEY, JSON.stringify([currentProject]));
+    }
+  }
+
+  static cleanupOldProjects(projects: BookProject[]): void {
+    // Remove projects older than 30 days or demo projects
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
     
-    if (existingIndex >= 0) {
-      projects[existingIndex] = { ...project, updatedAt: new Date().toISOString() };
-    } else {
-      projects.push(project);
+    const recentProjects = projects.filter(p => 
+      new Date(p.updatedAt) > thirtyDaysAgo && !p.title.toLowerCase().includes('demo')
+    );
+    
+    // If still too many, keep only the 5 most recent
+    let finalProjects = recentProjects;
+    if (finalProjects.length > 5) {
+      finalProjects = finalProjects
+        .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+        .slice(0, 5);
     }
     
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
+    if (finalProjects.length < projects.length) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(finalProjects));
+      console.log(`Cleaned up ${projects.length - finalProjects.length} old projects`);
+    }
+  }
+
+  // Force cleanup storage to resolve current quota issues
+  static forceCleanup(): void {
+    try {
+      const projects = this.getProjects();
+      console.log(`Current projects: ${projects.length}`);
+      
+      // Keep only the 2 most recent user projects
+      const userProjects = projects
+        .filter(p => !p.title.toLowerCase().includes('demo'))
+        .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+        .slice(0, 2);
+      
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(userProjects));
+      console.log(`Force cleanup complete, kept ${userProjects.length} projects`);
+    } catch (error) {
+      console.error('Force cleanup failed:', error);
+      localStorage.removeItem(STORAGE_KEY);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify([]));
+    }
   }
 
   static getProject(id: string): BookProject | null {

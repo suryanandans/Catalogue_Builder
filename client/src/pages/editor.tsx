@@ -18,8 +18,16 @@ export default function EditorPage() {
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [selectedContent, setSelectedContent] = useState<PageContent | undefined>();
   const [activePanel, setActivePanel] = useState<'templates' | 'eyeicons'>('templates');
+  const [saveTimeoutId, setSaveTimeoutId] = useState<number | null>(null);
 
   useEffect(() => {
+    // Force cleanup storage on component mount to prevent quota issues
+    try {
+      LocalStorage.forceCleanup();
+    } catch (error) {
+      console.error('Initial storage cleanup failed:', error);
+    }
+
     const urlParams = new URLSearchParams(window.location.search);
     const shouldCreateNew = urlParams.get('new') === 'true';
     const projectId = urlParams.get('projectId');
@@ -127,7 +135,7 @@ export default function EditorPage() {
     });
   };
 
-  const handleContentUpdate = (content: PageContent) => {
+  const handleContentUpdate = (content: PageContent, immediate: boolean = false) => {
     if (!currentProject) return;
 
     console.log("Editor: Updating content:", content);
@@ -148,17 +156,42 @@ export default function EditorPage() {
     };
 
     setCurrentProject(updatedProject);
-    LocalStorage.saveProject(updatedProject);
     setSelectedContent(content);
+
+    // Debounce saves during dragging to prevent quota exceeded errors
+    if (immediate) {
+      // Save immediately for important updates
+      LocalStorage.saveProject(updatedProject);
+    } else {
+      // Debounce for frequent updates (like dragging)
+      if (saveTimeoutId) {
+        clearTimeout(saveTimeoutId);
+      }
+      
+      const newTimeoutId = window.setTimeout(() => {
+        LocalStorage.saveProject(updatedProject);
+        setSaveTimeoutId(null);
+      }, 1000); // Save after 1 second of no updates
+      
+      setSaveTimeoutId(newTimeoutId);
+    }
   };
 
   const handleSave = () => {
     if (currentProject) {
-      LocalStorage.saveProject(currentProject);
-      toast({
-        title: "Project Saved",
-        description: "Your digital book has been saved successfully."
-      });
+      try {
+        LocalStorage.saveProject(currentProject);
+        toast({
+          title: "Project Saved",
+          description: "Your digital book has been saved successfully."
+        });
+      } catch (error) {
+        toast({
+          title: "Save Failed",
+          description: "Storage full. Try removing some images or old projects.",
+          variant: "destructive"
+        });
+      }
     }
   };
 
@@ -284,6 +317,28 @@ export default function EditorPage() {
                 data-testid="button-new-project"
               >
                 New Project
+              </Button>
+              
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  try {
+                    LocalStorage.forceCleanup();
+                    toast({
+                      title: "Storage Cleaned",
+                      description: "Old projects removed to free up space."
+                    });
+                  } catch (error) {
+                    toast({
+                      title: "Cleanup Failed",
+                      description: "Could not clean storage.",
+                      variant: "destructive"
+                    });
+                  }
+                }}
+                className="text-xs"
+              >
+                Free Space
               </Button>
               
               <Button 
