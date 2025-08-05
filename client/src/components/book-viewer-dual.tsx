@@ -78,14 +78,14 @@ export default function BookViewer({ project, onPageChange }: BookViewerProps) {
     setFlipDirection(direction);
     setIsFlipping(true);
     
-    // Enhanced page flip timing for dual-page spread (2x faster)
-    await new Promise(resolve => setTimeout(resolve, 600));
+    // Natural page flip timing
+    await new Promise(resolve => setTimeout(resolve, 1200));
     
     setCurrentSpreadIndex(newSpreadIndex);
     onPageChange?.(newSpreadIndex);
     
     // Complete the flip animation
-    await new Promise(resolve => setTimeout(resolve, 300));
+    await new Promise(resolve => setTimeout(resolve, 400));
     setIsFlipping(false);
   };
 
@@ -236,23 +236,29 @@ export default function BookViewer({ project, onPageChange }: BookViewerProps) {
             {/* Base Book (Always visible - current spread) */}
             <div className="flex relative">
               {/* Left Page */}
-              <div className="book-page-static bg-white w-96 h-96 p-8 relative border-r border-gray-200 shadow-xl"
+              <div className="book-page-static bg-white w-96 h-96 p-8 relative shadow-xl pointer-events-none select-none"
                    style={{ 
                      borderTopLeftRadius: "12px",
                      borderBottomLeftRadius: "12px",
+                     borderRight: "1px solid #e5e7eb",
                      boxShadow: "inset 3px 0 10px rgba(0,0,0,0.1), 0 0 20px rgba(0,0,0,0.2)"
                    }}>
-                {renderPageContent(currentSpread.left, 'left')}
+                <div className="pointer-events-none select-none">
+                  {renderPageContent(currentSpread.left, 'left')}
+                </div>
               </div>
 
               {/* Right Page */}
-              <div className="book-page-static bg-white w-96 h-96 p-8 relative shadow-xl"
+              <div className="book-page-static bg-white w-96 h-96 p-8 relative shadow-xl pointer-events-none select-none"
                    style={{ 
                      borderTopRightRadius: "12px",
                      borderBottomRightRadius: "12px",
+                     borderLeft: "1px solid #e5e7eb",
                      boxShadow: "inset -3px 0 10px rgba(0,0,0,0.1), 0 0 20px rgba(0,0,0,0.2)"
                    }}>
-                {renderPageContent(currentSpread.right, 'right')}
+                <div className="pointer-events-none select-none">
+                  {renderPageContent(currentSpread.right, 'right')}
+                </div>
               </div>
             </div>
 
@@ -279,13 +285,14 @@ export default function BookViewer({ project, onPageChange }: BookViewerProps) {
                       scale: 1
                     }}
                     animate={{
-                      rotateY: flipDirection === 'next' ? [0, -15, -45, -90, -135, -165, -180] : [0, 15, 45, 90, 135, 165, 180],
-                      scale: [1, 1.02, 1.05, 1.08, 1.05, 1.02, 1],
+                      rotateY: flipDirection === 'next' ? [0, -10, -25, -60, -90, -120, -155, -180] : [0, 10, 25, 60, 90, 120, 155, 180],
+                      scale: [1, 1.01, 1.03, 1.04, 1.05, 1.04, 1.02, 1],
+                      z: [0, 5, 15, 25, 30, 25, 10, 0],
                     }}
                     transition={{
-                      duration: 0.6,
-                      times: [0, 0.15, 0.3, 0.5, 0.7, 0.85, 1],
-                      ease: [0.25, 0.1, 0.25, 1]
+                      duration: 1.2,
+                      times: [0, 0.1, 0.25, 0.4, 0.5, 0.6, 0.8, 1],
+                      ease: [0.4, 0.0, 0.2, 1.0]
                     }}
                   >
                     {/* Front Side of Flipping Spread */}
@@ -303,7 +310,9 @@ export default function BookViewer({ project, onPageChange }: BookViewerProps) {
                              borderBottomLeftRadius: "12px",
                              borderRight: "1px solid rgba(0,0,0,0.1)"
                            }}>
-                        {renderPageContent(currentSpread.left, 'left')}
+                        <div className="pointer-events-none select-none">
+                          {renderPageContent(currentSpread.left, 'left')}
+                        </div>
                       </div>
                       
                       {/* Current Right Page */}
@@ -312,7 +321,9 @@ export default function BookViewer({ project, onPageChange }: BookViewerProps) {
                              borderTopRightRadius: "12px",
                              borderBottomRightRadius: "12px"
                            }}>
-                        {renderPageContent(currentSpread.right, 'right')}
+                        <div className="pointer-events-none select-none">
+                          {renderPageContent(currentSpread.right, 'right')}
+                        </div>
                       </div>
                     </div>
 
@@ -333,10 +344,12 @@ export default function BookViewer({ project, onPageChange }: BookViewerProps) {
                                borderBottomLeftRadius: "12px",
                                borderRight: "1px solid rgba(0,0,0,0.1)"
                              }}>
-                          {flipDirection === 'next' 
-                            ? renderPageContent(nextSpread.left, 'left')
-                            : renderPageContent(prevSpread.left, 'left')
-                          }
+                          <div className="pointer-events-none select-none">
+                            {flipDirection === 'next' 
+                              ? renderPageContent(nextSpread.left, 'left')
+                              : renderPageContent(prevSpread.left, 'left')
+                            }
+                          </div>
                         </div>
                         
                         {/* Next/Prev Right Page */}
@@ -345,10 +358,12 @@ export default function BookViewer({ project, onPageChange }: BookViewerProps) {
                                borderTopRightRadius: "12px",
                                borderBottomRightRadius: "12px"
                              }}>
-                          {flipDirection === 'next' 
-                            ? renderPageContent(nextSpread.right, 'right')
-                            : renderPageContent(prevSpread.right, 'right')
-                          }
+                          <div className="pointer-events-none select-none">
+                            {flipDirection === 'next' 
+                              ? renderPageContent(nextSpread.right, 'right')
+                              : renderPageContent(prevSpread.right, 'right')
+                            }
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -368,13 +383,13 @@ export default function BookViewer({ project, onPageChange }: BookViewerProps) {
                         zIndex: 1
                       }}
                       animate={{
-                        scale: [1, 1.3, 1.6, 1.4, 1.2, 1],
-                        rotate: flipDirection === 'next' ? [0, -8, -15, -12, -5, 0] : [0, 8, 15, 12, 5, 0]
+                        scale: [1, 1.2, 1.4, 1.3, 1.1, 1],
+                        rotate: flipDirection === 'next' ? [0, -5, -10, -8, -3, 0] : [0, 5, 10, 8, 3, 0]
                       }}
                       transition={{
-                        duration: 0.6,
+                        duration: 1.2,
                         times: [0, 0.2, 0.4, 0.6, 0.8, 1],
-                        ease: "easeInOut"
+                        ease: [0.4, 0.0, 0.2, 1.0]
                       }}
                     />
 
