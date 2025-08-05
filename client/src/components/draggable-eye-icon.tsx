@@ -47,7 +47,10 @@ export default function DraggableEyeIcon({
       const newX = Math.max(0, Math.min(e.clientX - startX - rect.left, rect.width - size));
       const newY = Math.max(0, Math.min(e.clientY - startY - rect.top, rect.height - size));
 
-      onPositionChange(id, { x: newX, y: newY });
+      // Use requestAnimationFrame for smoother updates
+      requestAnimationFrame(() => {
+        onPositionChange(id, { x: newX, y: newY });
+      });
     };
 
     const handleMouseUp = () => {
@@ -56,7 +59,7 @@ export default function DraggableEyeIcon({
       document.removeEventListener('mouseup', handleMouseUp);
     };
 
-    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mousemove', handleMouseMove, { passive: false });
     document.addEventListener('mouseup', handleMouseUp);
   };
 
@@ -72,8 +75,11 @@ export default function DraggableEyeIcon({
       const deltaY = resizeStart.clientY - e.clientY; // Invert for intuitive resizing
       const newSize = Math.max(16, Math.min(64, resizeStart.size + deltaY));
       
+      // Use requestAnimationFrame for smoother resizing
       if (onSizeChange) {
-        onSizeChange(id, newSize);
+        requestAnimationFrame(() => {
+          onSizeChange(id, newSize);
+        });
       }
     };
 
@@ -83,7 +89,7 @@ export default function DraggableEyeIcon({
       document.removeEventListener('mouseup', handleResizeUp);
     };
 
-    document.addEventListener('mousemove', handleResizeMove);
+    document.addEventListener('mousemove', handleResizeMove, { passive: false });
     document.addEventListener('mouseup', handleResizeUp);
   };
 

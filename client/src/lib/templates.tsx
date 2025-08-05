@@ -33,7 +33,7 @@ export const templates: Template[] = [
               <img 
                 src={image} 
                 alt={`Grid image ${index + 1}`} 
-                className="rounded object-cover w-full h-full"
+                className={`rounded w-full h-full ${props.imageFit || 'object-cover'}`}
                 data-testid={`grid-image-${index}`}
               />
             </MediaWithDraggableIcons>
@@ -117,7 +117,7 @@ export const templates: Template[] = [
             <img 
               src={props.image} 
               alt={props.title || "Hero Image"} 
-              className="w-full h-full object-cover"
+              className={`w-full h-full ${props.imageFit || 'object-cover'}`}
               style={{ borderRadius: "4px" }}
               data-testid="hero-image-display"
             />
@@ -212,7 +212,7 @@ export const templates: Template[] = [
               <img 
                 src={props.image} 
                 alt="Media content" 
-                className="w-full h-full object-cover rounded-lg"
+                className={`w-full h-full ${props.imageFit || 'object-cover'} rounded-lg`}
                 data-testid="mixed-image"
               />
             </MediaWithDraggableIcons>
@@ -226,7 +226,7 @@ export const templates: Template[] = [
               <video 
                 src={props.videoUrl} 
                 controls 
-                className="w-full h-full object-cover rounded-lg"
+                className={`w-full h-full ${props.videoFit || 'object-cover'} rounded-lg`}
                 data-testid="mixed-video"
               />
             </MediaWithDraggableIcons>

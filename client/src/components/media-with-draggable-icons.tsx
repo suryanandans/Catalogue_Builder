@@ -95,6 +95,7 @@ export default function MediaWithDraggableIcons({
 
   const handleEyeIconRemove = (id: string) => {
     const updatedIcons = eyeIcons.filter(icon => icon.id !== id);
+    // Ensure the update preserves any existing content/template data
     onEyeIconsUpdate(updatedIcons);
   };
 

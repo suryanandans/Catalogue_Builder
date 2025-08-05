@@ -29,6 +29,13 @@ export default function PropertiesPanel({ selectedContent, onContentUpdate }: Pr
     { name: "Orange", value: "#D97706" },
   ];
 
+  const imageFitOptions = [
+    { name: "Cover (Fill)", value: "object-cover", description: "Fill container, may crop" },
+    { name: "Contain (Fit)", value: "object-contain", description: "Fit entirely, may show padding" },
+    { name: "Fill (Stretch)", value: "object-fill", description: "Stretch to fill exactly" },
+    { name: "Scale Down", value: "object-scale-down", description: "Scale down if needed" }
+  ];
+
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && selectedContent && onContentUpdate) {
@@ -278,6 +285,39 @@ export default function PropertiesPanel({ selectedContent, onContentUpdate }: Pr
                     </div>
                   </div>
 
+                  {(selectedContent.content.image || selectedContent.content.videoUrl) && (
+                    <div className="mb-4">
+                      <Label className="text-sm font-medium text-gray-700 mb-2 block">Media Fit</Label>
+                      <div className="grid grid-cols-2 gap-2">
+                        {imageFitOptions.map((option) => (
+                          <button
+                            key={option.value}
+                            onClick={() => {
+                              if (selectedContent && onContentUpdate) {
+                                onContentUpdate({
+                                  ...selectedContent,
+                                  content: {
+                                    ...selectedContent.content,
+                                    imageFit: option.value,
+                                    videoFit: option.value
+                                  }
+                                });
+                              }
+                            }}
+                            className={`p-2 text-xs border rounded transition-colors ${
+                              (selectedContent.content.imageFit || selectedContent.content.videoFit || 'object-cover') === option.value
+                                ? 'border-bookcraft-primary bg-bookcraft-primary/10 text-bookcraft-primary'
+                                : 'border-gray-300 text-gray-600 hover:border-gray-400'
+                            }`}
+                            title={option.description}
+                          >
+                            {option.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   <Label className="text-sm font-medium text-gray-700 mb-2 block">Description</Label>
                   <RichTextEditor
                     content={selectedContent.content.content || "Add description..."}
@@ -325,13 +365,45 @@ export default function PropertiesPanel({ selectedContent, onContentUpdate }: Pr
                   </div>
                   
                   {selectedContent.content.image && (
-                    <div className="mb-4">
-                      <img 
-                        src={selectedContent.content.image} 
-                        alt="Hero preview" 
-                        className="w-full h-24 object-cover rounded border"
-                      />
-                    </div>
+                    <>
+                      <div className="mb-4">
+                        <img 
+                          src={selectedContent.content.image} 
+                          alt="Hero preview" 
+                          className="w-full h-24 object-cover rounded border"
+                        />
+                      </div>
+                      
+                      <div className="mb-4">
+                        <Label className="text-sm font-medium text-gray-700 mb-2 block">Image Fit</Label>
+                        <div className="grid grid-cols-2 gap-2">
+                          {imageFitOptions.map((option) => (
+                            <button
+                              key={option.value}
+                              onClick={() => {
+                                if (selectedContent && onContentUpdate) {
+                                  onContentUpdate({
+                                    ...selectedContent,
+                                    content: {
+                                      ...selectedContent.content,
+                                      imageFit: option.value
+                                    }
+                                  });
+                                }
+                              }}
+                              className={`p-2 text-xs border rounded transition-colors ${
+                                (selectedContent.content.imageFit || 'object-cover') === option.value
+                                  ? 'border-bookcraft-primary bg-bookcraft-primary/10 text-bookcraft-primary'
+                                  : 'border-gray-300 text-gray-600 hover:border-gray-400'
+                              }`}
+                              title={option.description}
+                            >
+                              {option.name}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </>
                   )}
                   
                   <Label className="text-sm font-medium text-gray-700 mb-2 block">Title</Label>
