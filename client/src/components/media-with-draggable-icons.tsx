@@ -124,8 +124,8 @@ export default function MediaWithDraggableIcons({
         />
       ))}
 
-      {/* Drop zone indicator */}
-      {isDragOver && (
+      {/* Drop zone indicator - only show in edit mode */}
+      {!isPreview && isDragOver && (
         <div className="absolute inset-0 bg-blue-100/50 border-2 border-dashed border-blue-500 rounded flex items-center justify-center z-10 pointer-events-none">
           <div className="bg-white px-3 py-2 rounded shadow-lg text-blue-700 text-sm font-medium">
             Drop eye icon here

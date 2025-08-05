@@ -91,7 +91,7 @@ export default function DraggableEyeIcon({
     e.preventDefault();
     e.stopPropagation();
     
-    if (mediaLink.url && !isDragging && !isResizing) {
+    if (mediaLink.url && (!isDragging && !isResizing) || isPreview) {
       window.open(mediaLink.url, '_blank', 'noopener,noreferrer');
     }
   };
@@ -112,22 +112,23 @@ export default function DraggableEyeIcon({
         left: position.x,
         top: position.y,
         width: size,
-        height: size
+        height: size,
+        pointerEvents: isPreview ? 'auto' : 'auto'
       }}
-      onMouseDown={handleMouseDown}
+      onMouseDown={isPreview ? undefined : handleMouseDown}
       onClick={handleClick}
-      onContextMenu={handleContextMenu}
-      title={mediaLink.title || mediaLink.url}
+      onContextMenu={isPreview ? undefined : handleContextMenu}
+      title={isPreview ? undefined : (mediaLink.title || mediaLink.url)}
     >
       {/* Eye Icon */}
       <div
         className={`w-full h-full bg-white border-2 border-blue-500 rounded-full flex items-center justify-center shadow-lg transition-all ${
           isDragging || isResizing ? 'scale-110' : 'hover:scale-105'
-        } ${isPreview ? 'hover:border-blue-600' : ''}`}
+        } ${isPreview ? 'hover:border-blue-600 hover:shadow-xl' : ''}`}
       >
         <Eye 
           size={Math.max(12, size * 0.6)} 
-          className="text-blue-600" 
+          className={`text-blue-600 transition-colors ${isPreview ? 'group-hover:text-blue-700' : ''}`}
         />
       </div>
 
@@ -155,10 +156,24 @@ export default function DraggableEyeIcon({
         </button>
       )}
 
-      {/* Tooltip */}
-      {mediaLink.title && (
-        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-30">
-          {mediaLink.title}
+      {/* Tooltip - always show in preview mode */}
+      {(mediaLink.title || isPreview) && (
+        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-3 px-3 py-2 bg-gray-900 text-white text-sm rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-all duration-200 pointer-events-none z-40 shadow-xl max-w-xs">
+          <div className="text-center">
+            {mediaLink.title && <div className="font-medium mb-1">{mediaLink.title}</div>}
+            {isPreview && (
+              <div className="text-xs text-gray-300">
+                🔗 Click to visit: {mediaLink.url.replace(/^https?:\/\//, '').split('/')[0]}
+              </div>
+            )}
+            {!isPreview && !mediaLink.title && (
+              <div className="text-xs text-gray-300">
+                {mediaLink.url}
+              </div>
+            )}
+          </div>
+          {/* Tooltip arrow */}
+          <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
         </div>
       )}
     </div>
