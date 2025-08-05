@@ -31,8 +31,28 @@ export default function RichTextEditor({
   const videoInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (editorRef.current) {
+    if (editorRef.current && editorRef.current.innerHTML !== content) {
+      // Save the current cursor position
+      const selection = window.getSelection();
+      const range = selection?.rangeCount ? selection.getRangeAt(0) : null;
+      const startContainer = range?.startContainer;
+      const startOffset = range?.startOffset;
+      
       editorRef.current.innerHTML = content;
+      
+      // Restore cursor position if possible
+      if (startContainer && startOffset !== undefined && editorRef.current.contains(startContainer)) {
+        try {
+          const newRange = document.createRange();
+          newRange.setStart(startContainer, Math.min(startOffset, startContainer.textContent?.length || 0));
+          newRange.collapse(true);
+          selection?.removeAllRanges();
+          selection?.addRange(newRange);
+        } catch (e) {
+          // If cursor restoration fails, just focus the editor
+          editorRef.current.focus();
+        }
+      }
     }
   }, [content]);
 
@@ -43,7 +63,10 @@ export default function RichTextEditor({
 
   const updateContent = () => {
     if (editorRef.current) {
-      onChange(editorRef.current.innerHTML);
+      const newContent = editorRef.current.innerHTML;
+      if (newContent !== content) {
+        onChange(newContent);
+      }
     }
   };
 
@@ -231,12 +254,19 @@ export default function RichTextEditor({
       {/* Editor */}
       <div
         ref={editorRef}
-        contentEditable
-        className="p-4 min-h-32 text-black focus:outline-none focus:ring-2 focus:ring-bookcraft-primary"
-        style={{ color: '#000000' }}
+        contentEditable="true"
+        className="p-4 min-h-32 text-black focus:outline-none focus:ring-2 focus:ring-bookcraft-primary bg-white"
+        style={{ color: '#000000', lineHeight: '1.5' }}
         onInput={updateContent}
         onBlur={updateContent}
+        onKeyUp={updateContent}
+        onPaste={updateContent}
+        suppressContentEditableWarning={true}
         data-testid="rich-text-editor"
+        spellCheck="false"
+        role="textbox"
+        aria-label="Rich text editor"
+        tabIndex={0}
       />
 
       {/* Hidden file inputs */}
