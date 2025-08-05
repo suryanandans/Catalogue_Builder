@@ -273,7 +273,7 @@ export default function BookViewer({ project, onPageChange }: BookViewerProps) {
               </div>
             </div>
 
-            {/* Realistic Page Flip Animation */}
+            {/* Realistic Dual-Page Spread Flip Animation */}
             <AnimatePresence>
               {isFlipping && (
                 <div
@@ -284,207 +284,184 @@ export default function BookViewer({ project, onPageChange }: BookViewerProps) {
                     perspective: "1500px"
                   }}
                 >
-                  {/* Right Page Flip (flips from right to left) */}
-                  {flipDirection === 'next' && (
-                    <motion.div
-                      className="absolute top-0 right-0"
+                  {/* Complete Spread Flip (both pages together) */}
+                  <motion.div
+                    className="absolute top-0 left-0 flex"
+                    style={{ 
+                      width: "802px", // Full width including binding
+                      height: "500px",
+                      transformOrigin: flipDirection === 'next' ? "right center" : "left center",
+                      transformStyle: "preserve-3d"
+                    }}
+                    initial={{ 
+                      rotateY: 0,
+                      z: 0
+                    }}
+                    animate={{
+                      rotateY: flipDirection === 'next' 
+                        ? [0, -15, -45, -75, -105, -135, -165, -180]
+                        : [0, 15, 45, 75, 105, 135, 165, 180],
+                      z: [0, 15, 35, 50, 55, 45, 25, 0],
+                      x: flipDirection === 'next' 
+                        ? [0, -8, -20, -35, -30, -15, -5, 0]
+                        : [0, 8, 20, 35, 30, 15, 5, 0]
+                    }}
+                    transition={{
+                      duration: 1.2,
+                      times: [0, 0.1, 0.25, 0.4, 0.55, 0.7, 0.85, 1],
+                      ease: [0.25, 0.1, 0.25, 1.0]
+                    }}
+                  >
+                    {/* Front Side of Complete Spread */}
+                    <div 
+                      className="flex w-full h-full"
                       style={{ 
-                        width: "400px",
-                        height: "500px",
-                        transformOrigin: "left center",
-                        transformStyle: "preserve-3d"
-                      }}
-                      initial={{ 
-                        rotateY: 0,
-                        z: 0
-                      }}
-                      animate={{
-                        rotateY: [0, -15, -45, -75, -105, -135, -165, -180],
-                        z: [0, 10, 25, 40, 45, 35, 15, 0],
-                        x: [0, -5, -15, -25, -20, -10, -3, 0]
-                      }}
-                      transition={{
-                        duration: 1.0,
-                        times: [0, 0.1, 0.25, 0.4, 0.55, 0.7, 0.85, 1],
-                        ease: [0.25, 0.1, 0.25, 1.0]
+                        backfaceVisibility: "hidden",
+                        background: "linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%)"
                       }}
                     >
-                      {/* Front Side of Right Page */}
+                      {/* Current Left Page */}
                       <div 
-                        className="absolute inset-0 bg-white"
+                        className="relative shadow-2xl page-surface bg-white"
                         style={{ 
-                          backfaceVisibility: "hidden",
-                          borderRadius: "0 8px 8px 0",
-                          boxShadow: "0 8px 32px rgba(0,0,0,0.15), inset -4px 0 12px rgba(0,0,0,0.1)",
-                          background: "linear-gradient(90deg, rgba(248,249,250,0.8) 0%, #ffffff 10%, #ffffff 100%)"
-                        }}
-                      >
-                        <div className="h-full w-full pointer-events-none select-none">
-                          {renderPageContent(currentSpread.right, 'right')}
-                        </div>
-                        
-                        {/* Page curl shadow effect */}
-                        <motion.div
-                          className="absolute inset-0 pointer-events-none"
-                          style={{
-                            background: "linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.05) 20%, rgba(0,0,0,0.1) 40%, rgba(0,0,0,0.05) 60%, transparent 100%)",
-                            borderRadius: "0 8px 8px 0"
-                          }}
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: [0, 0.3, 0.6, 0.8, 0.6, 0.3, 0] }}
-                          transition={{ 
-                            duration: 1.0,
-                            times: [0, 0.15, 0.3, 0.5, 0.7, 0.85, 1]
-                          }}
-                        />
-                      </div>
-
-                      {/* Back Side of Right Page */}
-                      <div 
-                        className="absolute inset-0 bg-white"
-                        style={{ 
-                          transform: "rotateY(180deg)",
-                          backfaceVisibility: "hidden",
+                          width: "400px",
+                          height: "500px",
                           borderRadius: "8px 0 0 8px",
-                          boxShadow: "0 8px 32px rgba(0,0,0,0.15), inset 4px 0 12px rgba(0,0,0,0.1)",
-                          background: "linear-gradient(90deg, #ffffff 0%, #ffffff 90%, rgba(248,249,250,0.8) 100%)"
-                        }}
-                      >
-                        <div className="h-full w-full pointer-events-none select-none transform scale-x-[-1]">
-                          {renderPageContent(nextSpread.left, 'left')}
-                        </div>
-                      </div>
-
-                      {/* Realistic page curl corner */}
-                      <motion.div
-                        className="absolute top-0 left-0 w-16 h-16 pointer-events-none"
-                        style={{
-                          background: "linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(245,245,245,0.9) 50%, rgba(235,235,235,0.8) 100%)",
-                          clipPath: "polygon(100% 0, 100% 100%, 0 0)",
-                          borderRadius: "0 0 0 8px",
-                          boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
-                          zIndex: 1
-                        }}
-                        animate={{
-                          scale: [1, 1.1, 1.3, 1.4, 1.3, 1.1, 1],
-                          rotate: [0, 2, 5, 8, 5, 2, 0],
-                          opacity: [0.8, 0.9, 1, 1, 0.9, 0.8, 0.6]
-                        }}
-                        transition={{
-                          duration: 1.0,
-                          ease: "easeInOut"
-                        }}
-                      />
-                    </motion.div>
-                  )}
-
-                  {/* Left Page Flip (flips from left to right) */}
-                  {flipDirection === 'prev' && (
-                    <motion.div
-                      className="absolute top-0 left-0"
-                      style={{ 
-                        width: "400px",
-                        height: "500px",
-                        transformOrigin: "right center",
-                        transformStyle: "preserve-3d"
-                      }}
-                      initial={{ 
-                        rotateY: 0,
-                        z: 0
-                      }}
-                      animate={{
-                        rotateY: [0, 15, 45, 75, 105, 135, 165, 180],
-                        z: [0, 10, 25, 40, 45, 35, 15, 0],
-                        x: [0, 5, 15, 25, 20, 10, 3, 0]
-                      }}
-                      transition={{
-                        duration: 1.0,
-                        times: [0, 0.1, 0.25, 0.4, 0.55, 0.7, 0.85, 1],
-                        ease: [0.25, 0.1, 0.25, 1.0]
-                      }}
-                    >
-                      {/* Front Side of Left Page */}
-                      <div 
-                        className="absolute inset-0 bg-white"
-                        style={{ 
-                          backfaceVisibility: "hidden",
-                          borderRadius: "8px 0 0 8px",
-                          boxShadow: "0 8px 32px rgba(0,0,0,0.15), inset 4px 0 12px rgba(0,0,0,0.1)",
-                          background: "linear-gradient(90deg, #ffffff 0%, #ffffff 90%, rgba(248,249,250,0.8) 100%)"
+                          boxShadow: "0 8px 32px rgba(0,0,0,0.15), inset 2px 0 12px rgba(0,0,0,0.1)"
                         }}
                       >
                         <div className="h-full w-full pointer-events-none select-none">
                           {renderPageContent(currentSpread.left, 'left')}
                         </div>
-                        
-                        {/* Page curl shadow effect */}
-                        <motion.div
-                          className="absolute inset-0 pointer-events-none"
-                          style={{
-                            background: "linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.05) 40%, rgba(0,0,0,0.1) 60%, rgba(0,0,0,0.05) 80%, transparent 100%)",
-                            borderRadius: "8px 0 0 8px"
-                          }}
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: [0, 0.3, 0.6, 0.8, 0.6, 0.3, 0] }}
-                          transition={{ 
-                            duration: 1.0,
-                            times: [0, 0.15, 0.3, 0.5, 0.7, 0.85, 1]
-                          }}
-                        />
                       </div>
 
-                      {/* Back Side of Left Page */}
+                      {/* Center Binding */}
+                      <div style={{ width: "2px", backgroundColor: "#e0e0e0", height: "500px" }} />
+
+                      {/* Current Right Page */}
                       <div 
-                        className="absolute inset-0 bg-white"
+                        className="relative shadow-2xl page-surface bg-white"
                         style={{ 
-                          transform: "rotateY(180deg)",
-                          backfaceVisibility: "hidden",
+                          width: "400px",
+                          height: "500px",
                           borderRadius: "0 8px 8px 0",
-                          boxShadow: "0 8px 32px rgba(0,0,0,0.15), inset -4px 0 12px rgba(0,0,0,0.1)",
-                          background: "linear-gradient(90deg, rgba(248,249,250,0.8) 0%, #ffffff 10%, #ffffff 100%)"
+                          boxShadow: "0 8px 32px rgba(0,0,0,0.15), inset -2px 0 12px rgba(0,0,0,0.1)"
                         }}
                       >
-                        <div className="h-full w-full pointer-events-none select-none transform scale-x-[-1]">
-                          {renderPageContent(prevSpread.right, 'right')}
+                        <div className="h-full w-full pointer-events-none select-none">
+                          {renderPageContent(currentSpread.right, 'right')}
                         </div>
                       </div>
+                    </div>
 
-                      {/* Realistic page curl corner */}
-                      <motion.div
-                        className="absolute top-0 right-0 w-16 h-16 pointer-events-none"
-                        style={{
-                          background: "linear-gradient(45deg, rgba(255,255,255,0.95) 0%, rgba(245,245,245,0.9) 50%, rgba(235,235,235,0.8) 100%)",
-                          clipPath: "polygon(0 0, 100% 100%, 0 100%)",
-                          borderRadius: "0 0 8px 0",
-                          boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
-                          zIndex: 1
-                        }}
-                        animate={{
-                          scale: [1, 1.1, 1.3, 1.4, 1.3, 1.1, 1],
-                          rotate: [0, -2, -5, -8, -5, -2, 0],
-                          opacity: [0.8, 0.9, 1, 1, 0.9, 0.8, 0.6]
-                        }}
-                        transition={{
-                          duration: 1.0,
-                          ease: "easeInOut"
-                        }}
-                      />
-                    </motion.div>
-                  )}
+                    {/* Back Side of Complete Spread (next/prev spread) */}
+                    <div 
+                      className="absolute inset-0 flex w-full h-full"
+                      style={{ 
+                        transform: "rotateY(180deg)",
+                        backfaceVisibility: "hidden",
+                        background: "linear-gradient(145deg, #f8f9fa 0%, #ffffff 100%)"
+                      }}
+                    >
+                      {/* Transform to mirror the back content correctly */}
+                      <div className="transform scale-x-[-1] flex w-full">
+                        {/* Next/Prev Left Page */}
+                        <div 
+                          className="relative shadow-2xl page-surface bg-white"
+                          style={{ 
+                            width: "400px",
+                            height: "500px",
+                            borderRadius: "8px 0 0 8px",
+                            boxShadow: "0 8px 32px rgba(0,0,0,0.15), inset 2px 0 12px rgba(0,0,0,0.1)"
+                          }}
+                        >
+                          <div className="h-full w-full pointer-events-none select-none">
+                            {flipDirection === 'next' 
+                              ? renderPageContent(nextSpread.left, 'left')
+                              : renderPageContent(prevSpread.left, 'left')
+                            }
+                          </div>
+                        </div>
+                        
+                        {/* Center Binding */}
+                        <div style={{ width: "2px", backgroundColor: "#e0e0e0", height: "500px" }} />
+                        
+                        {/* Next/Prev Right Page */}
+                        <div 
+                          className="relative shadow-2xl page-surface bg-white"
+                          style={{ 
+                            width: "400px",
+                            height: "500px",
+                            borderRadius: "0 8px 8px 0",
+                            boxShadow: "0 8px 32px rgba(0,0,0,0.15), inset -2px 0 12px rgba(0,0,0,0.1)"
+                          }}
+                        >
+                          <div className="h-full w-full pointer-events-none select-none">
+                            {flipDirection === 'next' 
+                              ? renderPageContent(nextSpread.right, 'right')
+                              : renderPageContent(prevSpread.right, 'right')
+                            }
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Enhanced Spread Page Curl Effects */}
+                    <motion.div
+                      className={`absolute w-20 h-20 ${
+                        flipDirection === 'next' ? 'top-0 right-0' : 'top-0 left-0'
+                      }`}
+                      style={{
+                        background: "linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(240,240,240,0.8) 100%)",
+                        clipPath: flipDirection === 'next' 
+                          ? "polygon(0 0, 100% 0, 0 100%)"
+                          : "polygon(100% 0, 100% 100%, 0 0)",
+                        borderRadius: flipDirection === 'next' ? "0 8px 0 0" : "8px 0 0 0",
+                        boxShadow: "0 8px 24px rgba(0,0,0,0.4)",
+                        zIndex: 1
+                      }}
+                      animate={{
+                        scale: [1, 1.15, 1.35, 1.4, 1.25, 1.1, 1],
+                        rotate: flipDirection === 'next' ? [0, -3, -8, -12, -8, -3, 0] : [0, 3, 8, 12, 8, 3, 0],
+                        opacity: [0.8, 0.9, 1, 1, 0.95, 0.85, 0.7]
+                      }}
+                      transition={{
+                        duration: 1.2,
+                        times: [0, 0.15, 0.3, 0.5, 0.7, 0.85, 1],
+                        ease: [0.25, 0.1, 0.25, 1.0]
+                      }}
+                    />
+
+                    {/* Dynamic Shadow Gradient Across Spread */}
+                    <motion.div
+                      className="absolute inset-0 pointer-events-none"
+                      style={{
+                        background: flipDirection === 'next'
+                          ? "linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.05) 25%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.1) 75%, transparent 100%)"
+                          : "linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.1) 25%, rgba(0,0,0,0.15) 50%, rgba(0,0,0,0.05) 75%, transparent 100%)",
+                        borderRadius: "8px"
+                      }}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: [0, 0.4, 0.8, 1, 0.8, 0.4, 0] }}
+                      transition={{ 
+                        duration: 1.2,
+                        times: [0, 0.15, 0.3, 0.5, 0.7, 0.85, 1]
+                      }}
+                    />
+                  </motion.div>
 
                   {/* Cast shadow on the base pages during flip */}
                   <motion.div
                     className="absolute inset-0 pointer-events-none"
                     style={{
-                      background: flipDirection === 'next' 
-                        ? "linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.1) 50%, transparent 100%)"
-                        : "linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.1) 50%, transparent 100%)",
-                      zIndex: 10
+                      background: "linear-gradient(90deg, transparent 0%, rgba(0,0,0,0.1) 50%, transparent 100%)",
+                      zIndex: 10,
+                      borderRadius: "8px"
                     }}
                     initial={{ opacity: 0 }}
-                    animate={{ opacity: [0, 0.2, 0.4, 0.3, 0.2, 0.1, 0] }}
+                    animate={{ opacity: [0, 0.25, 0.5, 0.4, 0.25, 0.1, 0] }}
                     transition={{
-                      duration: 1.0,
+                      duration: 1.2,
                       times: [0, 0.15, 0.4, 0.6, 0.75, 0.9, 1]
                     }}
                   />
