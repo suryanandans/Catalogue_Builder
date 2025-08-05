@@ -9,6 +9,7 @@ import { BookProject, BookPage, PageContent, Template } from "@/types/book";
 import TemplateGrid from "@/components/template-grid";
 import PageCanvas from "@/components/page-canvas";
 import PropertiesPanel from "@/components/properties-panel";
+import EyeIconPalette from "@/components/eye-icon-palette";
 
 export default function EditorPage() {
   const [, navigate] = useLocation();
@@ -16,6 +17,7 @@ export default function EditorPage() {
   const [currentProject, setCurrentProject] = useState<BookProject | null>(null);
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [selectedContent, setSelectedContent] = useState<PageContent | undefined>();
+  const [activePanel, setActivePanel] = useState<'templates' | 'eyeicons'>('templates');
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -203,11 +205,47 @@ export default function EditorPage() {
 
   return (
     <div className="flex h-screen">
-      {/* Left Sidebar - Templates */}
-      <TemplateGrid onTemplateSelect={(template) => {
-        console.log("Template selected:", template);
-        // Template can be applied by drag and drop to canvas
-      }} />
+      {/* Left Sidebar - Templates & Eye Icons */}
+      <div className="w-80 bg-white shadow-lg border-r border-gray-200 flex flex-col">
+        {/* Tab Headers */}
+        <div className="flex border-b border-gray-200">
+          <button
+            onClick={() => setActivePanel('templates')}
+            className={`flex-1 p-3 text-sm font-medium transition-colors ${
+              activePanel === 'templates'
+                ? 'bg-bookcraft-primary text-white'
+                : 'text-gray-600 hover:text-bookcraft-primary hover:bg-gray-50'
+            }`}
+          >
+            Templates
+          </button>
+          <button
+            onClick={() => setActivePanel('eyeicons')}
+            className={`flex-1 p-3 text-sm font-medium transition-colors ${
+              activePanel === 'eyeicons'
+                ? 'bg-bookcraft-primary text-white'
+                : 'text-gray-600 hover:text-bookcraft-primary hover:bg-gray-50'
+            }`}
+          >
+            Eye Icons
+          </button>
+        </div>
+
+        {/* Tab Content */}
+        <div className="flex-1 overflow-hidden">
+          {activePanel === 'templates' ? (
+            <TemplateGrid onTemplateSelect={(template) => {
+              console.log("Template selected:", template);
+              // Template can be applied by drag and drop to canvas
+            }} />
+          ) : (
+            <EyeIconPalette onStartDrag={(mediaLink) => {
+              console.log("Eye icon drag started:", mediaLink);
+              // Eye icon can be dragged to any media
+            }} />
+          )}
+        </div>
+      </div>
 
       {/* Main Canvas Area */}
       <div className="flex-1 flex flex-col">

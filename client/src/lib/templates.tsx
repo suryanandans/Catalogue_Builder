@@ -1,7 +1,7 @@
 import React from "react";
 import { Template } from "@/types/book";
 import { Grid, FileText, Image, Quote, Image as ImageIcon, Play, Video } from "lucide-react";
-import MediaWithEyeIcon from "@/components/media-with-eye-icon";
+import MediaWithDraggableIcons from "@/components/media-with-draggable-icons";
 
 export const templates: Template[] = [
   {
@@ -17,10 +17,16 @@ export const templates: Template[] = [
       <div className="relative grid grid-cols-2 gap-2 h-full">
         {props.images && props.images.length > 0 ? (
           props.images.slice(0, 4).map((image: string, index: number) => (
-            <MediaWithEyeIcon
+            <MediaWithDraggableIcons
               key={index}
-              mediaId={`grid-image-${index}`}
-              mediaLink={props.mediaLinks?.[`grid-image-${index}`]}
+              eyeIcons={props.eyeIcons?.filter((icon: any) => icon.mediaIndex === index) || []}
+              onEyeIconsUpdate={(eyeIcons) => {
+                if (props.onEyeIconsUpdate) {
+                  const updatedIcons = eyeIcons.map(icon => ({ ...icon, mediaIndex: index }));
+                  const otherIcons = (props.eyeIcons || []).filter((icon: any) => icon.mediaIndex !== index);
+                  props.onEyeIconsUpdate([...otherIcons, ...updatedIcons]);
+                }
+              }}
               className="bg-gray-200 rounded w-full h-full"
             >
               <img 
@@ -29,7 +35,7 @@ export const templates: Template[] = [
                 className="rounded object-cover w-full h-full"
                 data-testid={`grid-image-${index}`}
               />
-            </MediaWithEyeIcon>
+            </MediaWithDraggableIcons>
           ))
         ) : (
           [1, 2, 3, 4].map((i) => (
@@ -101,9 +107,9 @@ export const templates: Template[] = [
     content: (props) => (
       <div className="relative h-full w-full">
         {props.image ? (
-          <MediaWithEyeIcon
-            mediaId="hero-image"
-            mediaLink={props.mediaLinks?.['hero-image']}
+          <MediaWithDraggableIcons
+            eyeIcons={props.eyeIcons || []}
+            onEyeIconsUpdate={props.onEyeIconsUpdate || (() => {})}
             className="w-full h-full"
           >
             <img 
@@ -113,7 +119,7 @@ export const templates: Template[] = [
               style={{ borderRadius: "4px" }}
               data-testid="hero-image-display"
             />
-          </MediaWithEyeIcon>
+          </MediaWithDraggableIcons>
         ) : (
           <div className="bg-gray-200 w-full h-full flex items-center justify-center" style={{ borderRadius: "4px" }}>
             <div className="text-center text-gray-500">
@@ -196,9 +202,9 @@ export const templates: Template[] = [
         </h3>
         <div className="flex-1 bg-gray-200 rounded-lg flex items-center justify-center min-h-32">
           {props.image ? (
-            <MediaWithEyeIcon
-              mediaId="mixed-image"
-              mediaLink={props.mediaLinks?.['mixed-image']}
+            <MediaWithDraggableIcons
+              eyeIcons={props.eyeIcons || []}
+              onEyeIconsUpdate={props.onEyeIconsUpdate || (() => {})}
               className="w-full h-full"
             >
               <img 
@@ -207,11 +213,11 @@ export const templates: Template[] = [
                 className="w-full h-full object-cover rounded-lg"
                 data-testid="mixed-image"
               />
-            </MediaWithEyeIcon>
+            </MediaWithDraggableIcons>
           ) : props.videoUrl ? (
-            <MediaWithEyeIcon
-              mediaId="mixed-video"
-              mediaLink={props.mediaLinks?.['mixed-video']}
+            <MediaWithDraggableIcons
+              eyeIcons={props.eyeIcons || []}
+              onEyeIconsUpdate={props.onEyeIconsUpdate || (() => {})}
               className="w-full h-full"
             >
               <video 
@@ -220,7 +226,7 @@ export const templates: Template[] = [
                 className="w-full h-full object-cover rounded-lg"
                 data-testid="mixed-video"
               />
-            </MediaWithEyeIcon>
+            </MediaWithDraggableIcons>
           ) : (
             <div className="text-center text-gray-500">
               <ImageIcon className="mx-auto mb-2" size={32} />
@@ -256,9 +262,9 @@ export const templates: Template[] = [
     content: (props) => (
       <div className="relative h-full w-full bg-black rounded-lg overflow-hidden">
         {props.videoUrl ? (
-          <MediaWithEyeIcon
-            mediaId="video-player"
-            mediaLink={props.mediaLinks?.['video-player']}
+          <MediaWithDraggableIcons
+            eyeIcons={props.eyeIcons || []}
+            onEyeIconsUpdate={props.onEyeIconsUpdate || (() => {})}
             className="w-full h-full"
           >
             <video 
@@ -268,7 +274,7 @@ export const templates: Template[] = [
               data-testid="video-player"
               poster={props.thumbnail}
             />
-          </MediaWithEyeIcon>
+          </MediaWithDraggableIcons>
         ) : (
           <div className="bg-gray-900 w-full h-full flex items-center justify-center text-white">
             <div className="text-center">
@@ -333,10 +339,16 @@ export const templates: Template[] = [
         <div className="grid grid-cols-2 gap-2 h-4/5">
           {props.videos && props.videos.length > 0 ? (
             props.videos.slice(0, 4).map((video: any, index: number) => (
-              <MediaWithEyeIcon
+              <MediaWithDraggableIcons
                 key={index}
-                mediaId={`gallery-video-${index}`}
-                mediaLink={props.mediaLinks?.[`gallery-video-${index}`]}
+                eyeIcons={props.eyeIcons?.filter((icon: any) => icon.mediaIndex === index) || []}
+                onEyeIconsUpdate={(eyeIcons) => {
+                  if (props.onEyeIconsUpdate) {
+                    const updatedIcons = eyeIcons.map(icon => ({ ...icon, mediaIndex: index }));
+                    const otherIcons = (props.eyeIcons || []).filter((icon: any) => icon.mediaIndex !== index);
+                    props.onEyeIconsUpdate([...otherIcons, ...updatedIcons]);
+                  }
+                }}
                 className="relative bg-black rounded overflow-hidden group cursor-pointer"
               >
                 <video 
@@ -359,7 +371,7 @@ export const templates: Template[] = [
                     <p className="text-white text-xs font-medium truncate">{video.title}</p>
                   </div>
                 )}
-              </MediaWithEyeIcon>
+              </MediaWithDraggableIcons>
             ))
           ) : (
             [1, 2, 3, 4].map((i) => (

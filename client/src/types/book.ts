@@ -3,6 +3,12 @@ export interface MediaLink {
   title?: string;
 }
 
+export interface EyeIconInstance {
+  id: string;
+  position: { x: number; y: number };
+  mediaLink: MediaLink;
+}
+
 export interface PageContent {
   id: string;
   template: string;
@@ -11,6 +17,7 @@ export interface PageContent {
   mediaLinks?: {
     [mediaId: string]: MediaLink;
   };
+  eyeIcons?: EyeIconInstance[];
 }
 
 export interface BookPage {

@@ -25,7 +25,7 @@ export default function TemplateGrid({ onTemplateSelect }: TemplateGridProps) {
   };
 
   return (
-    <div className="w-80 bg-white shadow-lg border-r border-gray-200 flex flex-col">
+    <div className="flex flex-col h-full">
       <div className="p-6 border-b border-gray-200">
         <h2 className="text-xl font-semibold text-bookcraft-secondary mb-4">Templates</h2>
         <div className="space-y-3">
