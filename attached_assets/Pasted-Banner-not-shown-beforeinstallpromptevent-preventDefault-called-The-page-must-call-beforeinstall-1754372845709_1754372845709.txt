@@ -1,0 +1,74 @@
+Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner.
+2_app-4b44696321763171.js:13 WARN: A component changed from uncontrolled to controlled.
+(anonymous) @ _app-4b44696321763171.js:13Understand this warning
+3_app-4b44696321763171.js:13 FocusLock: focus-fighting detected. Only one focus management system could be active. See https://github.com/theKashey/focus-lock/#focus-fighting
+(anonymous) @ _app-4b44696321763171.js:13Understand this error
+framework-9a64fe0dfb2c2ef1.js:1 Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+_ @ framework-9a64fe0dfb2c2ef1.js:1Understand this error
+framework-9a64fe0dfb2c2ef1.js:1 Unrecognized feature: 'ambient-light-sensor'.
+_ @ framework-9a64fe0dfb2c2ef1.js:1Understand this warning
+framework-9a64fe0dfb2c2ef1.js:1 Unrecognized feature: 'battery'.
+_ @ framework-9a64fe0dfb2c2ef1.js:1Understand this warning
+framework-9a64fe0dfb2c2ef1.js:1 Unrecognized feature: 'execution-while-not-rendered'.
+_ @ framework-9a64fe0dfb2c2ef1.js:1Understand this warning
+framework-9a64fe0dfb2c2ef1.js:1 Unrecognized feature: 'execution-while-out-of-viewport'.
+_ @ framework-9a64fe0dfb2c2ef1.js:1Understand this warning
+framework-9a64fe0dfb2c2ef1.js:1 Unrecognized feature: 'layout-animations'.
+_ @ framework-9a64fe0dfb2c2ef1.js:1Understand this warning
+framework-9a64fe0dfb2c2ef1.js:1 Unrecognized feature: 'legacy-image-formats'.
+_ @ framework-9a64fe0dfb2c2ef1.js:1Understand this warning
+framework-9a64fe0dfb2c2ef1.js:1 Unrecognized feature: 'navigation-override'.
+_ @ framework-9a64fe0dfb2c2ef1.js:1Understand this warning
+framework-9a64fe0dfb2c2ef1.js:1 Unrecognized feature: 'oversized-images'.
+_ @ framework-9a64fe0dfb2c2ef1.js:1Understand this warning
+framework-9a64fe0dfb2c2ef1.js:1 Unrecognized feature: 'publickey-credentials'.
+_ @ framework-9a64fe0dfb2c2ef1.js:1Understand this warning
+framework-9a64fe0dfb2c2ef1.js:1 Unrecognized feature: 'speaker-selection'.
+_ @ framework-9a64fe0dfb2c2ef1.js:1Understand this warning
+framework-9a64fe0dfb2c2ef1.js:1 Unrecognized feature: 'unoptimized-images'.
+_ @ framework-9a64fe0dfb2c2ef1.js:1Understand this warning
+framework-9a64fe0dfb2c2ef1.js:1 Unrecognized feature: 'unsized-media'.
+_ @ framework-9a64fe0dfb2c2ef1.js:1Understand this warning
+framework-9a64fe0dfb2c2ef1.js:1 Unrecognized feature: 'pointer-lock'.
+_ @ framework-9a64fe0dfb2c2ef1.js:1Understand this warning
+framework-9a64fe0dfb2c2ef1.js:1 Allow attribute will take precedence over 'allowfullscreen'.
+_ @ framework-9a64fe0dfb2c2ef1.js:1Understand this warning
+framework-9a64fe0dfb2c2ef1.js:1 Allow attribute will take precedence over 'allowpaymentrequest'.
+_ @ framework-9a64fe0dfb2c2ef1.js:1Understand this warning
+framework-9a64fe0dfb2c2ef1.js:1 Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+_ @ framework-9a64fe0dfb2c2ef1.js:1Understand this error
+framework-9a64fe0dfb2c2ef1.js:1 Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.
+_ @ framework-9a64fe0dfb2c2ef1.js:1Understand this error
+workspace_iframe.html:32 Error while parsing the 'sandbox' attribute: 'allow-downloads-without-user-activation' is an invalid sandbox flag.Understand this error
+workspace_iframe.html:32 Unrecognized feature: 'ambient-light-sensor'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'battery'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'execution-while-not-rendered'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'execution-while-out-of-viewport'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'layout-animations'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'legacy-image-formats'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'navigation-override'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'oversized-images'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'publickey-credentials'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'speaker-selection'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'unoptimized-images'.Understand this warning
+workspace_iframe.html:32 Unrecognized feature: 'unsized-media'.Understand this warning
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowfullscreen'.Understand this warning
+workspace_iframe.html:32 Allow attribute will take precedence over 'allowpaymentrequest'.Understand this warning
+Console.js:61 Viewer: Found projects: 1 Array(1)
+Console.js:61 Viewer: Loading project: My New Book Object
+Console.js:61 Page 0: Object
+Console.js:61 Viewer: Project is empty, adding demo content
+Console.js:61 Spread changed to: 2
+Console.js:61 Spread changed to: 0
+Console.js:61 Editor: Applying template: quote-block with default props: Object
+Console.js:61 Editor: Saved project with new content: Object
+Console.js:61 Editor: Applying template: quote-block with default props: Object
+Console.js:61 Editor: Saved project with new content: Object
+Console.js:61 Editor: Applying template: quote-block with default props: Object
+Console.js:61 Editor: Saved project with new content: Object
+Console.js:61 Editor: Applying template: quote-block with default props: Object
+Console.js:61 Editor: Saved project with new content: Object
+Console.js:61 Viewer: Found projects: 2 Array(2)
+Console.js:61 Viewer: Loading project: My New Book Object
+Console.js:61 Page 0: Object
+Console.js:61 Page 1: Object

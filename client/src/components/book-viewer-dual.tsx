@@ -21,26 +21,41 @@ export default function BookViewer({ project, onPageChange }: BookViewerProps) {
   const dragProgress = useTransform(dragX, [-200, 0, 200], [1, 0, 1]);
 
   const totalPages = project.pages.length;
-  const totalSpreads = Math.ceil(totalPages / 2);
+  const totalSpreads = totalPages; // Each page is a spread with left and right content
   
   const getCurrentSpread = () => {
-    const leftPage = project.pages[currentSpreadIndex * 2];
-    const rightPage = project.pages[currentSpreadIndex * 2 + 1];
-    return { left: leftPage, right: rightPage };
+    const currentPage = project.pages[currentSpreadIndex];
+    
+    console.log("Viewer: getCurrentSpread - spread index:", currentSpreadIndex, "current page:", currentPage);
+    
+    if (!currentPage) {
+      return { left: null, right: null };
+    }
+    
+    return { 
+      left: currentPage.left, 
+      right: currentPage.right
+    };
   };
   
   const getNextSpread = () => {
-    if (currentSpreadIndex >= totalSpreads - 1) return { left: null, right: null };
-    const leftPage = project.pages[(currentSpreadIndex + 1) * 2];
-    const rightPage = project.pages[(currentSpreadIndex + 1) * 2 + 1];
-    return { left: leftPage, right: rightPage };
+    const nextPageIndex = currentSpreadIndex + 1;
+    if (nextPageIndex >= totalPages) return { left: null, right: null };
+    const nextPage = project.pages[nextPageIndex];
+    return { 
+      left: nextPage?.left || null, 
+      right: nextPage?.right || null 
+    };
   };
   
   const getPrevSpread = () => {
-    if (currentSpreadIndex <= 0) return { left: null, right: null };
-    const leftPage = project.pages[(currentSpreadIndex - 1) * 2];
-    const rightPage = project.pages[(currentSpreadIndex - 1) * 2 + 1];
-    return { left: leftPage, right: rightPage };
+    const prevPageIndex = currentSpreadIndex - 1;
+    if (prevPageIndex < 0) return { left: null, right: null };
+    const prevPage = project.pages[prevPageIndex];
+    return { 
+      left: prevPage?.left || null, 
+      right: prevPage?.right || null 
+    };
   };
 
   const currentSpread = getCurrentSpread();
@@ -52,7 +67,7 @@ export default function BookViewer({ project, onPageChange }: BookViewerProps) {
 
     let newSpreadIndex = currentSpreadIndex;
     
-    if (direction === 'next' && currentSpreadIndex < totalSpreads - 1) {
+    if (direction === 'next' && currentSpreadIndex < totalPages - 1) {
       newSpreadIndex = currentSpreadIndex + 1;
     } else if (direction === 'prev' && currentSpreadIndex > 0) {
       newSpreadIndex = currentSpreadIndex - 1;
@@ -67,7 +82,7 @@ export default function BookViewer({ project, onPageChange }: BookViewerProps) {
     await new Promise(resolve => setTimeout(resolve, 600));
     
     setCurrentSpreadIndex(newSpreadIndex);
-    onPageChange?.(newSpreadIndex * 2);
+    onPageChange?.(newSpreadIndex);
     
     // Complete the flip animation
     await new Promise(resolve => setTimeout(resolve, 300));
@@ -99,7 +114,7 @@ export default function BookViewer({ project, onPageChange }: BookViewerProps) {
     const currentDragValue = dragX.get();
     
     if (Math.abs(currentDragValue) > 80) {
-      if (currentDragValue > 0 && currentSpreadIndex < totalSpreads - 1) {
+      if (currentDragValue > 0 && currentSpreadIndex < totalPages - 1) {
         flipSpread('next');
       } else if (currentDragValue < 0 && currentSpreadIndex > 0) {
         flipSpread('prev');
@@ -188,8 +203,8 @@ export default function BookViewer({ project, onPageChange }: BookViewerProps) {
           </div>
           <div className="flex items-center space-x-4">
             <span className="text-sm text-white/80" data-testid="text-page-info">
-              Spread <span data-testid="text-current-spread">{currentSpreadIndex + 1}</span> of{" "}
-              <span data-testid="text-total-spreads">{totalSpreads}</span>
+              Page <span data-testid="text-current-spread">{currentSpreadIndex + 1}</span> of{" "}
+              <span data-testid="text-total-spreads">{totalPages}</span>
             </span>
             <Button
               variant="ghost"
