@@ -51,9 +51,11 @@ export default function EditorPage() {
     const newContent: PageContent = {
       id: crypto.randomUUID(),
       template: template.id,
-      content: template.defaultProps,
+      content: { ...template.defaultProps }, // Deep copy to avoid reference issues
       position
     };
+
+    console.log("Editor: Applying template:", template.id, "with default props:", template.defaultProps);
 
     const updatedPages = [...currentProject.pages];
     const currentPage = updatedPages[currentPageIndex];
@@ -66,12 +68,15 @@ export default function EditorPage() {
 
     const updatedProject = {
       ...currentProject,
-      pages: updatedPages
+      pages: updatedPages,
+      updatedAt: new Date().toISOString()
     };
 
     setCurrentProject(updatedProject);
     LocalStorage.saveProject(updatedProject);
     setSelectedContent(newContent);
+
+    console.log("Editor: Saved project with new content:", updatedProject);
 
     toast({
       title: "Template Applied",
@@ -109,6 +114,8 @@ export default function EditorPage() {
   const handleContentUpdate = (content: PageContent) => {
     if (!currentProject) return;
 
+    console.log("Editor: Updating content:", content);
+
     const updatedPages = [...currentProject.pages];
     const currentPage = updatedPages[currentPageIndex];
     
@@ -120,7 +127,8 @@ export default function EditorPage() {
 
     const updatedProject = {
       ...currentProject,
-      pages: updatedPages
+      pages: updatedPages,
+      updatedAt: new Date().toISOString()
     };
 
     setCurrentProject(updatedProject);
@@ -182,7 +190,10 @@ export default function EditorPage() {
   return (
     <div className="flex h-screen">
       {/* Left Sidebar - Templates */}
-      <TemplateGrid onTemplateSelect={(template) => console.log("Template selected:", template)} />
+      <TemplateGrid onTemplateSelect={(template) => {
+        console.log("Template selected:", template);
+        // Template can be applied by drag and drop to canvas
+      }} />
 
       {/* Main Canvas Area */}
       <div className="flex-1 flex flex-col">
@@ -320,10 +331,14 @@ export default function EditorPage() {
       </div>
 
       {/* Right Sidebar - Properties */}
-      <PropertiesPanel
-        selectedContent={selectedContent}
-        onContentUpdate={handleContentUpdate}
-      />
+      {selectedContent && (
+        <div className="w-80 bg-white shadow-lg border-l border-gray-200 overflow-y-auto">
+          <PropertiesPanel
+            selectedContent={selectedContent}
+            onContentUpdate={handleContentUpdate}
+          />
+        </div>
+      )}
     </div>
   );
 }

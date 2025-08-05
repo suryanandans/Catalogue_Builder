@@ -133,42 +133,44 @@ export default function RichTextEditor({
   return (
     <div className={`border border-gray-300 rounded-lg ${className}`}>
       {/* Toolbar */}
-      <div className="flex items-center gap-2 p-3 border-b border-gray-200 bg-gray-50">
+      <div className="flex flex-wrap items-center gap-2 p-3 border-b border-gray-200 bg-gray-50">
         {/* Text Formatting */}
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => handleFormat('bold')}
-          className="h-8 w-8 p-0"
-          data-testid="button-bold"
-        >
-          <Bold size={16} />
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => handleFormat('italic')}
-          className="h-8 w-8 p-0"
-          data-testid="button-italic"
-        >
-          <Italic size={16} />
-        </Button>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => handleFormat('underline')}
-          className="h-8 w-8 p-0"
-          data-testid="button-underline"
-        >
-          <Underline size={16} />
-        </Button>
+        <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => handleFormat('bold')}
+            className="h-8 w-8 p-0"
+            data-testid="button-bold"
+          >
+            <Bold size={16} />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => handleFormat('italic')}
+            className="h-8 w-8 p-0"
+            data-testid="button-italic"
+          >
+            <Italic size={16} />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => handleFormat('underline')}
+            className="h-8 w-8 p-0"
+            data-testid="button-underline"
+          >
+            <Underline size={16} />
+          </Button>
+        </div>
 
         <Separator orientation="vertical" className="h-6" />
 
         {/* Font Size */}
         <select
           onChange={(e) => handleFontSize(e.target.value)}
-          className="text-xs border border-gray-300 rounded px-2 py-1"
+          className="text-xs border border-gray-300 rounded px-2 py-1 min-w-[60px]"
           data-testid="select-font-size"
         >
           <option value="">Size</option>
@@ -182,14 +184,15 @@ export default function RichTextEditor({
         <Separator orientation="vertical" className="h-6" />
 
         {/* Text Colors */}
-        <div className="flex gap-1">
-          {colors.slice(0, 8).map((color) => (
+        <div className="flex gap-1 flex-wrap">
+          {colors.slice(0, 6).map((color) => (
             <button
               key={color}
               onClick={() => handleTextColor(color)}
               className="w-6 h-6 rounded border border-gray-300 hover:scale-110 transition-transform"
               style={{ backgroundColor: color }}
               data-testid={`color-${color}`}
+              title={`Text color: ${color}`}
             />
           ))}
         </div>
@@ -199,24 +202,28 @@ export default function RichTextEditor({
             <Separator orientation="vertical" className="h-6" />
             
             {/* Media Upload */}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => fileInputRef.current?.click()}
-              className="h-8 w-8 p-0"
-              data-testid="button-upload-image"
-            >
-              <ImageIcon size={16} />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => videoInputRef.current?.click()}
-              className="h-8 w-8 p-0"
-              data-testid="button-upload-video"
-            >
-              <Video size={16} />
-            </Button>
+            <div className="flex items-center gap-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => fileInputRef.current?.click()}
+                className="h-8 w-8 p-0"
+                data-testid="button-upload-image"
+                title="Upload Image"
+              >
+                <ImageIcon size={16} />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => videoInputRef.current?.click()}
+                className="h-8 w-8 p-0"
+                data-testid="button-upload-video"
+                title="Upload Video"
+              >
+                <Video size={16} />
+              </Button>
+            </div>
           </>
         )}
       </div>

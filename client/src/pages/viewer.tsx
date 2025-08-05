@@ -106,6 +106,13 @@ export default function ViewerPage() {
         });
       });
       
+      // If project has no content, add demo content to show functionality
+      if (project.pages.length === 1 && !project.pages[0].left && !project.pages[0].right) {
+        console.log("Viewer: Project is empty, adding demo content");
+        createDemoContent(project);
+        LocalStorage.saveProject(project);
+      }
+      
       setCurrentProject(project);
     } else {
       // Create a demo project only if no projects exist

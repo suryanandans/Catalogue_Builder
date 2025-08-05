@@ -58,13 +58,17 @@ export default function TemplateGrid({ onTemplateSelect }: TemplateGridProps) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
               className="template-card bg-gray-100 rounded-lg p-4 border-2 border-dashed border-gray-300 cursor-grab hover:border-bookcraft-primary transition-colors"
-              draggable
-              onDragStart={(e: React.DragEvent) => handleDragStart(e, template)}
               onClick={() => onTemplateSelect?.(template)}
               data-testid={`template-${template.id}`}
             >
-              {template.preview}
-              <p className="text-xs text-gray-600 text-center mt-2">{template.name}</p>
+              <div
+                draggable
+                onDragStart={(e) => handleDragStart(e, template)}
+                className="w-full h-full"
+              >
+                {template.preview}
+                <p className="text-xs text-gray-600 text-center mt-2">{template.name}</p>
+              </div>
             </motion.div>
           ))}
         </div>

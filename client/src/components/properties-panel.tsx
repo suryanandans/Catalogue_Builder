@@ -60,7 +60,7 @@ export default function PropertiesPanel({ selectedContent, onContentUpdate }: Pr
   };
 
   return (
-    <div className="w-80 bg-white shadow-lg border-l border-gray-200">
+    <div className="h-full">
       <div className="p-6">
         <h3 className="text-lg font-semibold text-bookcraft-secondary mb-4">Properties</h3>
         <div className="space-y-6">
