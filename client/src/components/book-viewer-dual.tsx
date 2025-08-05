@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
 import { BookProject, BookPage } from "@/types/book";
 import { getTemplateById } from "@/lib/templates";
@@ -164,9 +164,21 @@ export default function BookViewer({ project, onPageChange }: BookViewerProps) {
     try {
       const contentData = content.content || template.defaultProps;
       console.log("Viewer: Rendering template content with data:", contentData);
+      // Create read-only version of template content
+      const readOnlyContent = React.cloneElement(
+        template.content(contentData) as React.ReactElement,
+        {
+          style: { pointerEvents: 'none', userSelect: 'none' },
+          contentEditable: false,
+          suppressContentEditableWarning: true
+        }
+      );
+      
       return (
-        <div className="bg-white rounded-lg border shadow-sm h-full p-4">
-          {template.content(contentData)}
+        <div className="bg-white h-full w-full overflow-hidden" style={{ pointerEvents: 'none', userSelect: 'none' }}>
+          <div className="h-full w-full p-6" style={{ pointerEvents: 'none', userSelect: 'none' }}>
+            {readOnlyContent}
+          </div>
         </div>
       );
     } catch (error) {
@@ -236,29 +248,28 @@ export default function BookViewer({ project, onPageChange }: BookViewerProps) {
             {/* Base Book (Always visible - current spread) */}
             <div className="flex relative">
               {/* Left Page */}
-              <div className="book-page-static bg-white w-96 h-96 p-8 relative shadow-xl pointer-events-none select-none"
+              <div className="book-page-static bg-white relative shadow-2xl pointer-events-none select-none"
                    style={{ 
-                     borderTopLeftRadius: "12px",
-                     borderBottomLeftRadius: "12px",
-                     borderRight: "1px solid #e5e7eb",
-                     boxShadow: "inset 3px 0 10px rgba(0,0,0,0.1), 0 0 20px rgba(0,0,0,0.2)"
+                     width: "400px",
+                     height: "500px",
+                     borderRadius: "8px 0 0 8px",
+                     boxShadow: "0 4px 20px rgba(0,0,0,0.15), inset 2px 0 8px rgba(0,0,0,0.1)"
                    }}>
-                <div className="pointer-events-none select-none">
-                  {renderPageContent(currentSpread.left, 'left')}
-                </div>
+                {renderPageContent(currentSpread.left, 'left')}
               </div>
 
+              {/* Minimal Center Binding */}
+              <div style={{ width: "2px", backgroundColor: "#e0e0e0", height: "500px" }} />
+
               {/* Right Page */}
-              <div className="book-page-static bg-white w-96 h-96 p-8 relative shadow-xl pointer-events-none select-none"
+              <div className="book-page-static bg-white relative shadow-2xl pointer-events-none select-none"
                    style={{ 
-                     borderTopRightRadius: "12px",
-                     borderBottomRightRadius: "12px",
-                     borderLeft: "1px solid #e5e7eb",
-                     boxShadow: "inset -3px 0 10px rgba(0,0,0,0.1), 0 0 20px rgba(0,0,0,0.2)"
+                     width: "400px",
+                     height: "500px",
+                     borderRadius: "0 8px 8px 0",
+                     boxShadow: "0 4px 20px rgba(0,0,0,0.15), inset -2px 0 8px rgba(0,0,0,0.1)"
                    }}>
-                <div className="pointer-events-none select-none">
-                  {renderPageContent(currentSpread.right, 'right')}
-                </div>
+                {renderPageContent(currentSpread.right, 'right')}
               </div>
             </div>
 
@@ -304,24 +315,25 @@ export default function BookViewer({ project, onPageChange }: BookViewerProps) {
                       }}
                     >
                       {/* Current Left Page */}
-                      <div className="w-96 h-96 p-8 relative shadow-2xl page-surface"
+                      <div className="relative shadow-2xl page-surface bg-white"
                            style={{ 
-                             borderTopLeftRadius: "12px",
-                             borderBottomLeftRadius: "12px",
-                             borderRight: "1px solid rgba(0,0,0,0.1)"
+                             width: "400px",
+                             height: "500px",
+                             borderRadius: "8px 0 0 8px"
                            }}>
-                        <div className="pointer-events-none select-none">
+                        <div className="pointer-events-none select-none h-full w-full">
                           {renderPageContent(currentSpread.left, 'left')}
                         </div>
                       </div>
                       
                       {/* Current Right Page */}
-                      <div className="w-96 h-96 p-8 relative shadow-2xl page-surface"
+                      <div className="relative shadow-2xl page-surface bg-white"
                            style={{ 
-                             borderTopRightRadius: "12px",
-                             borderBottomRightRadius: "12px"
+                             width: "400px",
+                             height: "500px",
+                             borderRadius: "0 8px 8px 0"
                            }}>
-                        <div className="pointer-events-none select-none">
+                        <div className="pointer-events-none select-none h-full w-full">
                           {renderPageContent(currentSpread.right, 'right')}
                         </div>
                       </div>
@@ -338,13 +350,13 @@ export default function BookViewer({ project, onPageChange }: BookViewerProps) {
                     >
                       <div className="transform scale-x-[-1] flex w-full">
                         {/* Next/Prev Left Page */}
-                        <div className="w-96 h-96 p-8 relative shadow-2xl page-surface"
+                        <div className="relative shadow-2xl page-surface bg-white"
                              style={{ 
-                               borderTopLeftRadius: "12px",
-                               borderBottomLeftRadius: "12px",
-                               borderRight: "1px solid rgba(0,0,0,0.1)"
+                               width: "400px",
+                               height: "500px",
+                               borderRadius: "8px 0 0 8px"
                              }}>
-                          <div className="pointer-events-none select-none">
+                          <div className="pointer-events-none select-none h-full w-full">
                             {flipDirection === 'next' 
                               ? renderPageContent(nextSpread.left, 'left')
                               : renderPageContent(prevSpread.left, 'left')
@@ -353,12 +365,13 @@ export default function BookViewer({ project, onPageChange }: BookViewerProps) {
                         </div>
                         
                         {/* Next/Prev Right Page */}
-                        <div className="w-96 h-96 p-8 relative shadow-2xl page-surface"
+                        <div className="relative shadow-2xl page-surface bg-white"
                              style={{ 
-                               borderTopRightRadius: "12px",
-                               borderBottomRightRadius: "12px"
+                               width: "400px",
+                               height: "500px",
+                               borderRadius: "0 8px 8px 0"
                              }}>
-                          <div className="pointer-events-none select-none">
+                          <div className="pointer-events-none select-none h-full w-full">
                             {flipDirection === 'next' 
                               ? renderPageContent(nextSpread.right, 'right')
                               : renderPageContent(prevSpread.right, 'right')

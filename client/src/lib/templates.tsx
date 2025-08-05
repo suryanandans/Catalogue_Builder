@@ -64,8 +64,6 @@ export const templates: Template[] = [
       <div className="space-y-4 h-full">
         <h3 
           className="text-xl font-bold text-black" 
-          contentEditable 
-          suppressContentEditableWarning={true}
           data-testid="text-title"
           style={{ color: '#000000' }}
         >
@@ -73,8 +71,6 @@ export const templates: Template[] = [
         </h3>
         <div 
           className="text-black text-sm leading-relaxed" 
-          contentEditable 
-          suppressContentEditableWarning={true}
           data-testid="text-content"
           style={{ color: '#000000' }}
           dangerouslySetInnerHTML={{ __html: props.content || "Start writing your article content here..." }}
@@ -96,27 +92,26 @@ export const templates: Template[] = [
       </div>
     ),
     content: (props) => (
-      <div className="relative h-full">
+      <div className="relative h-full w-full">
         {props.image ? (
           <img 
             src={props.image} 
             alt={props.title || "Hero Image"} 
-            className="w-full h-3/4 object-cover rounded-lg"
+            className="w-full h-full object-cover"
+            style={{ borderRadius: "4px" }}
             data-testid="hero-image-display"
           />
         ) : (
-          <div className="bg-gray-200 rounded-lg object-cover w-full h-3/4 flex items-center justify-center">
+          <div className="bg-gray-200 w-full h-full flex items-center justify-center" style={{ borderRadius: "4px" }}>
             <div className="text-center text-gray-500">
               <Image className="mx-auto mb-2" size={48} />
-              <p className="text-sm">Click Properties to add image</p>
+              <p className="text-sm">Add image in editor</p>
             </div>
           </div>
         )}
-        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent rounded-b-lg p-4">
+        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4" style={{ borderRadius: "0 0 4px 4px" }}>
           <h3 
-            className="text-white font-bold" 
-            contentEditable 
-            suppressContentEditableWarning={true}
+            className="text-white font-bold text-lg" 
             data-testid="text-hero-title"
             style={{ color: '#ffffff' }}
           >
@@ -145,16 +140,12 @@ export const templates: Template[] = [
           <Quote className="text-3xl text-gray-300 mb-4 mx-auto" size={32} />
           <blockquote 
             className="text-lg font-medium text-black mb-4" 
-            contentEditable 
-            suppressContentEditableWarning={true}
             data-testid="text-quote"
             style={{ color: '#000000' }}
             dangerouslySetInnerHTML={{ __html: props.quote || "This is an inspiring quote that adds meaning to your content." }}
           />
           <cite 
             className="text-sm text-black" 
-            contentEditable 
-            suppressContentEditableWarning={true}
             data-testid="text-author"
             style={{ color: '#000000' }}
           >
@@ -185,8 +176,6 @@ export const templates: Template[] = [
       <div className="space-y-4 h-full">
         <h3 
           className="text-lg font-bold text-black" 
-          contentEditable 
-          suppressContentEditableWarning={true}
           data-testid="text-mixed-title"
           style={{ color: '#000000' }}
         >
