@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Separator } from "@/components/ui/separator";
-import { Upload, Image, Video, Bold, Italic, Underline, Type } from "lucide-react";
+import { Upload, Image, Video, Bold, Italic, Underline, Type, Play } from "lucide-react";
 import RichTextEditor from "@/components/rich-text-editor";
 
 interface PropertiesPanelProps {
@@ -28,22 +28,69 @@ export default function PropertiesPanel({ selectedContent, onContentUpdate }: Pr
     { name: "Orange", value: "#D97706" },
   ];
 
-  const handleMediaUpload = (e: React.ChangeEvent<HTMLInputElement>, mediaType: 'image' | 'video') => {
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file && selectedContent && onContentUpdate) {
       const reader = new FileReader();
       reader.onload = (event) => {
-        const mediaUrl = event.target?.result as string;
+        const imageUrl = event.target?.result as string;
         onContentUpdate({
           ...selectedContent,
           content: {
             ...selectedContent.content,
-            mediaUrl,
-            mediaType
+            image: imageUrl
           }
         });
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && selectedContent && onContentUpdate) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const videoUrl = event.target?.result as string;
+        onContentUpdate({
+          ...selectedContent,
+          content: {
+            ...selectedContent.content,
+            videoUrl: videoUrl
+          }
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleVideoArrayUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length > 0 && selectedContent && onContentUpdate) {
+      const videoPromises = files.map(file => {
+        return new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            resolve({
+              url: event.target?.result as string,
+              title: file.name.replace(/\.[^/.]+$/, ""), // Remove file extension
+              thumbnail: null
+            });
+          };
+          reader.readAsDataURL(file);
+        });
+      });
+
+      Promise.all(videoPromises).then(videos => {
+        const currentVideos = selectedContent.content.videos || [];
+        onContentUpdate({
+          ...selectedContent,
+          content: {
+            ...selectedContent.content,
+            videos: [...currentVideos, ...videos]
+          }
+        });
+      });
     }
   };
 
@@ -117,7 +164,7 @@ export default function PropertiesPanel({ selectedContent, onContentUpdate }: Pr
                       <input
                         type="file"
                         accept="image/*"
-                        onChange={(e) => handleMediaUpload(e, 'image')}
+                        onChange={handleImageUpload}
                         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                         data-testid="input-mixed-image"
                       />
@@ -134,7 +181,7 @@ export default function PropertiesPanel({ selectedContent, onContentUpdate }: Pr
                       <input
                         type="file"
                         accept="video/*"
-                        onChange={(e) => handleMediaUpload(e, 'video')}
+                        onChange={handleVideoUpload}
                         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                         data-testid="input-mixed-video"
                       />
@@ -287,6 +334,123 @@ export default function PropertiesPanel({ selectedContent, onContentUpdate }: Pr
                                 }
                               }}
                               className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 text-xs flex items-center justify-center hover:bg-red-600"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Video Player Template */}
+              {selectedContent.template === 'video-player' && (
+                <div>
+                  <Label className="text-sm font-medium text-gray-700 mb-2 block">Video Title</Label>
+                  <Input
+                    value={selectedContent.content.title || ""}
+                    onChange={(e) => handleRichTextChange('title', e.target.value)}
+                    placeholder="Video title"
+                    data-testid="input-video-title"
+                    className="mb-4"
+                  />
+                  
+                  <Label className="text-sm font-medium text-gray-700 mb-2 block">Video File</Label>
+                  <div className="relative mb-4">
+                    <input
+                      type="file"
+                      accept="video/*"
+                      onChange={handleVideoUpload}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      data-testid="input-video-file"
+                    />
+                    <Button
+                      variant="outline"
+                      className="w-full p-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-bookcraft-primary transition-colors"
+                    >
+                      <Video className="mb-2 mx-auto" size={24} />
+                      <br />
+                      {selectedContent.content.videoUrl ? 'Change Video' : 'Upload Video'}
+                    </Button>
+                  </div>
+                  
+                  {selectedContent.content.videoUrl && (
+                    <div className="mb-4">
+                      <video 
+                        src={selectedContent.content.videoUrl} 
+                        className="w-full h-24 object-cover rounded border"
+                        controls
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Video Gallery Template */}
+              {selectedContent.template === 'video-gallery' && (
+                <div>
+                  <Label className="text-sm font-medium text-gray-700 mb-2 block">Gallery Title</Label>
+                  <Input
+                    value={selectedContent.content.title || ""}
+                    onChange={(e) => handleRichTextChange('title', e.target.value)}
+                    placeholder="Video Gallery"
+                    data-testid="input-gallery-title"
+                    className="mb-4"
+                  />
+                  
+                  <Label className="text-sm font-medium text-gray-700 mb-2 block">Add Videos</Label>
+                  <div className="relative mb-4">
+                    <input
+                      type="file"
+                      accept="video/*"
+                      multiple
+                      onChange={handleVideoArrayUpload}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      data-testid="input-gallery-videos"
+                    />
+                    <Button
+                      variant="outline"
+                      className="w-full p-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-bookcraft-primary transition-colors"
+                    >
+                      <Video className="mb-2 mx-auto" size={24} />
+                      <br />
+                      Upload Videos (Multiple)
+                    </Button>
+                  </div>
+                  
+                  {selectedContent.content.videos && selectedContent.content.videos.length > 0 && (
+                    <div className="mb-4">
+                      <Label className="text-sm font-medium text-gray-700 mb-2 block">
+                        Videos in Gallery ({selectedContent.content.videos.length}/4)
+                      </Label>
+                      <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto">
+                        {selectedContent.content.videos.map((video: any, index: number) => (
+                          <div key={index} className="relative">
+                            <video 
+                              src={video.url} 
+                              className="w-full h-16 object-cover rounded border"
+                              muted
+                            />
+                            <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                              <Play className="text-white" size={16} />
+                            </div>
+                            <button
+                              onClick={() => {
+                                if (selectedContent && onContentUpdate) {
+                                  const newVideos = selectedContent.content.videos.filter((_: any, i: number) => i !== index);
+                                  onContentUpdate({
+                                    ...selectedContent,
+                                    content: {
+                                      ...selectedContent.content,
+                                      videos: newVideos
+                                    }
+                                  });
+                                }
+                              }}
+                              className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white rounded-full text-xs flex items-center justify-center hover:bg-red-600"
+                              data-testid={`button-remove-video-${index}`}
                             >
                               ×
                             </button>

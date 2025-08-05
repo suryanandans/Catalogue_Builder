@@ -1,6 +1,6 @@
 import React from "react";
 import { Template } from "@/types/book";
-import { Grid, FileText, Image, Quote, Image as ImageIcon } from "lucide-react";
+import { Grid, FileText, Image, Quote, Image as ImageIcon, Play, Video } from "lucide-react";
 
 export const templates: Template[] = [
   {
@@ -182,26 +182,17 @@ export const templates: Template[] = [
           {props.title || "Mixed Content"}
         </h3>
         <div className="flex-1 bg-gray-200 rounded-lg flex items-center justify-center min-h-32">
-          {props.mediaUrl ? (
-            props.mediaType === 'video' ? (
-              <video 
-                src={props.mediaUrl} 
-                controls 
-                className="max-w-full max-h-full rounded-lg"
-                data-testid="mixed-video"
-              />
-            ) : (
-              <img 
-                src={props.mediaUrl} 
-                alt="Media content" 
-                className="max-w-full max-h-full object-cover rounded-lg"
-                data-testid="mixed-image"
-              />
-            )
+          {props.image ? (
+            <img 
+              src={props.image} 
+              alt="Media content" 
+              className="w-full h-full object-cover rounded-lg"
+              data-testid="mixed-image"
+            />
           ) : (
             <div className="text-center text-gray-500">
               <ImageIcon className="mx-auto mb-2" size={32} />
-              <p className="text-sm">Click Properties to add media</p>
+              <p className="text-sm">Click Properties to add image</p>
             </div>
           )}
         </div>
@@ -218,8 +209,135 @@ export const templates: Template[] = [
     defaultProps: {
       title: "Mixed Content",
       content: "Add your description here...",
-      mediaUrl: null,
-      mediaType: null
+      image: null
+    }
+  },
+  {
+    id: 'video-player',
+    name: 'Video Player',
+    category: 'mixed',
+    preview: (
+      <div className="aspect-square bg-white rounded border-2 mb-2 flex items-center justify-center">
+        <Play className="text-gray-400" size={16} />
+      </div>
+    ),
+    content: (props) => (
+      <div className="relative h-full w-full bg-black rounded-lg overflow-hidden">
+        {props.videoUrl ? (
+          <video 
+            src={props.videoUrl} 
+            controls 
+            className="w-full h-full object-cover"
+            data-testid="video-player"
+            poster={props.thumbnail}
+          />
+        ) : (
+          <div className="bg-gray-900 w-full h-full flex items-center justify-center text-white">
+            <div className="text-center">
+              <Video className="mx-auto mb-2" size={48} />
+              <p className="text-sm">Add video in Properties panel</p>
+              <p className="text-xs text-gray-400 mt-1">Supports MP4, WebM formats</p>
+            </div>
+          </div>
+        )}
+        {props.title && (
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3">
+            <h3 
+              className="text-white font-semibold text-sm" 
+              data-testid="text-video-title"
+              style={{ color: '#ffffff' }}
+            >
+              {props.title}
+            </h3>
+          </div>
+        )}
+      </div>
+    ),
+    defaultProps: {
+      title: "Video Title",
+      videoUrl: null,
+      thumbnail: null
+    }
+  },
+  {
+    id: 'video-gallery',
+    name: 'Video Gallery',
+    category: 'mixed',
+    preview: (
+      <div className="aspect-square bg-white rounded border-2 mb-2 flex flex-col p-1 gap-1">
+        <div className="flex gap-1 flex-1">
+          <div className="flex-1 bg-gray-200 rounded flex items-center justify-center">
+            <Play className="text-gray-400" size={8} />
+          </div>
+          <div className="flex-1 bg-gray-200 rounded flex items-center justify-center">
+            <Play className="text-gray-400" size={8} />
+          </div>
+        </div>
+        <div className="flex gap-1 flex-1">
+          <div className="flex-1 bg-gray-200 rounded flex items-center justify-center">
+            <Play className="text-gray-400" size={8} />
+          </div>
+          <div className="flex-1 bg-gray-200 rounded flex items-center justify-center">
+            <Play className="text-gray-400" size={8} />
+          </div>
+        </div>
+      </div>
+    ),
+    content: (props) => (
+      <div className="h-full">
+        <h3 
+          className="text-lg font-bold text-black mb-3" 
+          data-testid="text-gallery-title"
+          style={{ color: '#000000' }}
+        >
+          {props.title || "Video Gallery"}
+        </h3>
+        <div className="grid grid-cols-2 gap-2 h-4/5">
+          {props.videos && props.videos.length > 0 ? (
+            props.videos.slice(0, 4).map((video: any, index: number) => (
+              <div key={index} className="relative bg-black rounded overflow-hidden group cursor-pointer">
+                <video 
+                  src={video.url} 
+                  className="w-full h-full object-cover"
+                  data-testid={`gallery-video-${index}`}
+                  poster={video.thumbnail}
+                  muted
+                  onMouseEnter={(e) => e.currentTarget.play()}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.pause();
+                    e.currentTarget.currentTime = 0;
+                  }}
+                />
+                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors flex items-center justify-center">
+                  <Play className="text-white opacity-70 group-hover:opacity-100 transition-opacity" size={24} />
+                </div>
+                {video.title && (
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-2">
+                    <p className="text-white text-xs font-medium truncate">{video.title}</p>
+                  </div>
+                )}
+              </div>
+            ))
+          ) : (
+            [1, 2, 3, 4].map((i) => (
+              <div key={i} className="bg-gray-200 rounded flex items-center justify-center">
+                {i === 1 ? (
+                  <div className="text-center text-gray-500">
+                    <Video className="mx-auto mb-1" size={20} />
+                    <p className="text-xs">Add videos</p>
+                  </div>
+                ) : (
+                  <Play className="text-gray-400" size={16} />
+                )}
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+    ),
+    defaultProps: {
+      title: "Video Gallery",
+      videos: []
     }
   }
 ];

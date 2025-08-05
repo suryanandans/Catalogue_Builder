@@ -7,6 +7,7 @@ BookCraft is a React-based digital book creation platform with a drag-and-drop e
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+Video Support: User requested video support within template sections that fit properly in template views. All multimedia elements (text, images, videos) must correctly fit within template layouts.
 
 ## System Architecture
 
