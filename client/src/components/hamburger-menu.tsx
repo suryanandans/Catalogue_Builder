@@ -94,10 +94,7 @@ export default function HamburgerMenu() {
         variant="ghost"
         size="icon"
         className="hover:bg-gray-100"
-        onClick={() => {
-          console.log('Hamburger clicked, sidebar currently:', isOpen ? 'HIDDEN' : 'VISIBLE', 'setting to:', !isOpen ? 'HIDDEN' : 'VISIBLE');
-          setIsOpen(!isOpen);
-        }}
+        onClick={() => setIsOpen(!isOpen)}
         data-testid="hamburger-menu-trigger"
       >
         <Menu className="h-5 w-5" />
@@ -105,7 +102,7 @@ export default function HamburgerMenu() {
 
       {/* Static Sidebar - Always visible on non-viewer pages except when manually closed */}
       {!isViewerPage && (
-        <div className={`fixed left-0 top-16 h-[calc(100vh-4rem)] w-80 bg-white shadow-md border-r border-gray-200 z-30 transform transition-transform duration-300 ease-in-out ${
+        <div className={`fixed left-0 top-16 h-[calc(100vh-4rem)] w-80 bg-white shadow-lg border-r border-gray-200 z-40 transform transition-all duration-300 ease-in-out ${
           isOpen ? '-translate-x-full' : 'translate-x-0'
         }`}>
           {/* Sidebar Header */}
