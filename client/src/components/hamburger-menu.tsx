@@ -94,10 +94,12 @@ export default function HamburgerMenu() {
         variant="ghost"
         size="icon"
         className="hover:bg-gray-100"
-        onClick={() => {
-          console.log('Hamburger clicked - current isOpen:', isOpen, 'will set to:', !isOpen);
-          setIsOpen(!isOpen);
-          console.log('After setIsOpen called');
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          const newValue = !isOpen;
+          console.log('Hamburger clicked - current isOpen:', isOpen, 'setting to:', newValue);
+          setIsOpen(newValue);
         }}
         data-testid="hamburger-menu-trigger"
       >

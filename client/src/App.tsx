@@ -79,10 +79,17 @@ function Router() {
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false); // false = sidebar visible, true = sidebar hidden
   
+  const handleSidebarToggle = (value: boolean) => {
+    console.log('handleSidebarToggle called with:', value);
+    setSidebarOpen(value);
+  };
+  
+  console.log('App render - sidebarOpen:', sidebarOpen);
+  
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <SidebarContext.Provider value={{ isOpen: sidebarOpen, setIsOpen: setSidebarOpen }}>
+        <SidebarContext.Provider value={{ isOpen: sidebarOpen, setIsOpen: handleSidebarToggle }}>
           <div className="min-h-screen bg-bookcraft-gray-50">
             <Navigation />
             <motion.main
