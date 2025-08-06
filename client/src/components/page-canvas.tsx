@@ -107,8 +107,12 @@ export default function PageCanvas({
 
   return (
     <motion.div
-      className={`page-canvas bg-white rounded-lg shadow-lg border border-gray-200 w-96 h-96 p-6 relative transition-all ${
-        isDragOver ? "border-bookcraft-primary bg-blue-50" : ""
+      className={`page-canvas ${
+        isPreview 
+          ? "w-full h-full" 
+          : `bg-white rounded-lg shadow-lg border border-gray-200 w-96 h-96 p-6 relative transition-all ${
+              isDragOver ? "border-bookcraft-primary bg-blue-50" : ""
+            }`
       }`}
       data-page={position}
       onDragOver={handleDragOver}

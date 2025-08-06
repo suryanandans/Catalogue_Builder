@@ -137,7 +137,7 @@ export default function BookViewer({ project, onPageChange }: BookViewerProps) {
     // Handle completely empty or null content
     if (!content || !content.template) {
       return (
-        <div className="flex items-center justify-center h-full text-gray-400 bg-white rounded-lg border-2 border-dashed border-gray-300">
+        <div className="flex items-center justify-center h-full text-gray-400 bg-white">
           <div className="text-center p-8">
             <div className="text-gray-300 mb-2">📄</div>
             <span className="text-sm">Empty page</span>
@@ -152,7 +152,7 @@ export default function BookViewer({ project, onPageChange }: BookViewerProps) {
     if (!template) {
       console.error("Viewer: Template not found:", content.template);
       return (
-        <div className="flex items-center justify-center h-full text-red-500 text-sm bg-white rounded-lg border">
+        <div className="flex items-center justify-center h-full text-red-500 text-sm bg-white">
           <div className="text-center p-4">
             <p>Template not found: {content.template}</p>
             <p className="text-xs mt-1 text-gray-500">Available templates: photo-grid, text-article, hero-image, quote-block, mixed-media</p>
@@ -176,7 +176,7 @@ export default function BookViewer({ project, onPageChange }: BookViewerProps) {
       
       return (
         <div className="bg-white h-full w-full overflow-hidden">
-          <div className="h-full w-full p-6">
+          <div className="h-full w-full">
             {templateContent}
           </div>
         </div>
@@ -184,7 +184,7 @@ export default function BookViewer({ project, onPageChange }: BookViewerProps) {
     } catch (error) {
       console.error("Viewer: Error rendering template:", error, content);
       return (
-        <div className="flex items-center justify-center h-full text-red-500 text-sm bg-white rounded-lg border">
+        <div className="flex items-center justify-center h-full text-red-500 text-sm bg-white">
           <div className="text-center p-4">
             <p>Error rendering template</p>
             <p className="text-xs mt-1">{String(error)}</p>

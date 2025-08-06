@@ -230,6 +230,9 @@ export const templates: Template[] = [
               <video 
                 src={props.videoUrl} 
                 controls 
+                autoPlay={props.isPreview}
+                muted={props.isPreview}
+                loop={props.isPreview}
                 className={`w-full h-full ${props.videoFit || 'object-cover'} rounded-lg`}
                 data-testid="mixed-video"
               />
@@ -278,6 +281,9 @@ export const templates: Template[] = [
             <video 
               src={props.videoUrl} 
               controls 
+              autoPlay={props.isPreview}
+              muted={props.isPreview}
+              loop={props.isPreview}
               className="w-full h-full object-cover"
               data-testid="video-player"
               poster={props.thumbnail}
@@ -366,6 +372,8 @@ export const templates: Template[] = [
                   data-testid={`gallery-video-${index}`}
                   poster={video.thumbnail}
                   muted
+                  autoPlay={props.isPreview}
+                  loop={props.isPreview}
                   onMouseEnter={(e) => e.currentTarget.play()}
                   onMouseLeave={(e) => {
                     e.currentTarget.pause();
