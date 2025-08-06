@@ -1,67 +1,38 @@
-import { Switch, Route, useLocation } from "wouter";
+import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { Book, Edit, Eye, Library } from "lucide-react";
+import { Book } from "lucide-react";
 import { motion } from "framer-motion";
 import LandingPage from "@/pages/landing";
 import EditorPage from "@/pages/editor";
 import ViewerPage from "@/pages/viewer";
 import MyBooksPage from "@/pages/my-books";
 import DemoViewerPage from "@/pages/demo-viewer";
+import ProfilePage from "@/pages/profile";
+import SettingsPage from "@/pages/settings";
 import NotFound from "@/pages/not-found";
+import HamburgerMenu from "@/components/hamburger-menu";
+import ProfileDropdown from "@/components/profile-dropdown";
 
 function Navigation() {
-  const [location, navigate] = useLocation();
-
-  const navItems = [
-    { path: "/", label: "Home", icon: Book },
-    { path: "/my-books", label: "My Books", icon: Library },
-    { path: "/editor", label: "Editor", icon: Edit },
-  ];
-
   return (
     <nav className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <div className="flex items-center space-x-8">
+          {/* Left side - Hamburger menu and logo */}
+          <div className="flex items-center space-x-4">
+            <HamburgerMenu />
             <div className="flex items-center space-x-2" data-testid="logo">
               <Book className="text-2xl text-bookcraft-primary" />
               <span className="text-xl font-bold text-bookcraft-secondary">BookCraft</span>
             </div>
-            <div className="hidden md:flex space-x-6">
-              {navItems.map((item) => (
-                <button
-                  key={item.path}
-                  onClick={() => navigate(item.path)}
-                  className={`text-gray-700 hover:text-bookcraft-primary font-medium transition-colors ${
-                    location === item.path ? "text-bookcraft-primary" : ""
-                  }`}
-                  data-testid={`nav-${item.label.toLowerCase()}`}
-                >
-                  {item.label}
-                </button>
-              ))}
-            </div>
           </div>
-          <div className="flex items-center space-x-3">
-            <button 
-              onClick={() => navigate("/my-books")}
-              className="border-2 border-bookcraft-primary text-bookcraft-primary px-4 py-2 rounded-lg font-medium hover:bg-bookcraft-primary hover:text-white transition-colors"
-              data-testid="button-my-books"
-            >
-              <Library className="inline mr-2" size={16} />
-              My Books
-            </button>
-            <button 
-              onClick={() => navigate("/editor?new=true")}
-              className="bg-bookcraft-primary text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
-              data-testid="button-new-project"
-            >
-              <Edit className="inline mr-2" size={16} />
-              New Project
-            </button>
+          
+          {/* Right side - Profile dropdown */}
+          <div className="flex items-center">
+            <ProfileDropdown />
           </div>
         </div>
       </div>
@@ -72,11 +43,16 @@ function Navigation() {
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={LandingPage} />
+      <Route path="/" component={MyBooksPage} />
       <Route path="/my-books" component={MyBooksPage} />
+      <Route path="/landing" component={LandingPage} />
       <Route path="/editor" component={EditorPage} />
       <Route path="/viewer" component={ViewerPage} />
       <Route path="/demo" component={DemoViewerPage} />
+      <Route path="/profile" component={ProfilePage} />
+      <Route path="/settings" component={SettingsPage} />
+      <Route path="/help" component={NotFound} />
+      <Route path="/viewers" component={NotFound} />
       <Route component={NotFound} />
     </Switch>
   );

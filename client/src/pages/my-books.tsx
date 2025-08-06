@@ -94,6 +94,23 @@ export default function MyBooksPage() {
     });
   };
 
+  const getBookThumbnail = (project: BookProject) => {
+    // Generate a random gradient for each book based on its ID
+    const colors = [
+      'from-blue-400 to-blue-600',
+      'from-purple-400 to-purple-600',
+      'from-green-400 to-green-600',
+      'from-pink-400 to-pink-600',
+      'from-indigo-400 to-indigo-600',
+      'from-red-400 to-red-600',
+      'from-yellow-400 to-yellow-600',
+      'from-teal-400 to-teal-600'
+    ];
+    
+    const colorIndex = project.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % colors.length;
+    return colors[colorIndex];
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -156,27 +173,30 @@ export default function MyBooksPage() {
         {/* Books Grid */}
         {projects.length === 0 ? (
           <motion.div 
-            className="text-center py-12"
+            className="text-center py-16"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <Book className="mx-auto text-gray-400 mb-4" size={64} />
-            <h3 className="text-xl font-semibold text-gray-600 mb-2">No books yet</h3>
-            <p className="text-gray-500 mb-6 max-w-md mx-auto">
-              Start creating your first digital book by clicking the "Create New Book" button above.
+            <div className="bg-gray-100 rounded-full w-24 h-24 flex items-center justify-center mx-auto mb-6">
+              <Book className="text-gray-400" size={48} />
+            </div>
+            <h3 className="text-2xl font-semibold text-gray-800 mb-3">No books yet</h3>
+            <p className="text-gray-500 mb-8 max-w-md mx-auto">
+              Start creating your first digital book and bring your stories to life with our interactive editor.
             </p>
             <Button 
               onClick={() => setIsCreateDialogOpen(true)}
+              size="lg"
               className="bg-bookcraft-primary hover:bg-blue-700"
               data-testid="button-create-first-book"
             >
-              <Plus className="mr-2" size={16} />
+              <Plus className="mr-2" size={20} />
               Create Your First Book
             </Button>
           </motion.div>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {projects.map((project, index) => (
               <motion.div
                 key={project.id}
@@ -184,30 +204,61 @@ export default function MyBooksPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
               >
-                <Card className="hover:shadow-lg transition-shadow group">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-lg font-semibold text-bookcraft-secondary line-clamp-2">
-                      {project.title}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      {/* Project Statistics */}
-                      <div className="grid grid-cols-2 gap-4 text-sm text-gray-600">
-                        <div className="flex items-center">
-                          <FileText className="mr-1" size={14} />
-                          <span>{getPageCount(project)} pages</span>
-                        </div>
-                        <div className="flex items-center">
-                          <Book className="mr-1" size={14} />
-                          <span>{getContentCount(project)} layouts</span>
+                <Card className="hover:shadow-xl transition-all duration-300 group hover:-translate-y-2 overflow-hidden">
+                  {/* Book Thumbnail */}
+                  <div className="relative">
+                    <div className={`h-48 bg-gradient-to-br ${getBookThumbnail(project)} flex items-center justify-center relative overflow-hidden`}>
+                      <div className="absolute inset-0 bg-black/10"></div>
+                      <div className="relative z-10 text-center">
+                        <Book className="text-white/80 mx-auto mb-2" size={32} />
+                        <div className="text-white/90 font-medium text-sm px-2 leading-tight line-clamp-2">
+                          {project.title}
                         </div>
                       </div>
                       
-                      {/* Last Modified */}
-                      <div className="flex items-center text-xs text-gray-500">
-                        <Calendar className="mr-1" size={12} />
-                        <span>Modified {formatDate(project.updatedAt)}</span>
+                      {/* Hover overlay with quick actions */}
+                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center space-x-2">
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          onClick={() => handleViewBook(project.id)}
+                          className="opacity-90 hover:opacity-100"
+                          data-testid={`button-quick-view-${project.id}`}
+                        >
+                          <Eye className="mr-1" size={14} />
+                          View
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          onClick={() => handleEditBook(project.id)}
+                          className="opacity-90 hover:opacity-100"
+                          data-testid={`button-quick-edit-${project.id}`}
+                        >
+                          <Edit className="mr-1" size={14} />
+                          Edit
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+
+                  <CardContent className="p-4">
+                    <div className="space-y-3">
+                      {/* Book Title */}
+                      <h3 className="font-semibold text-gray-900 line-clamp-2 text-base">
+                        {project.title}
+                      </h3>
+                      
+                      {/* Project Statistics */}
+                      <div className="flex items-center justify-between text-sm text-gray-500">
+                        <div className="flex items-center">
+                          <FileText className="mr-1" size={12} />
+                          <span>{getPageCount(project)} pages</span>
+                        </div>
+                        <div className="flex items-center">
+                          <Calendar className="mr-1" size={12} />
+                          <span>{formatDate(project.updatedAt)}</span>
+                        </div>
                       </div>
                       
                       {/* Action Buttons */}
@@ -216,7 +267,7 @@ export default function MyBooksPage() {
                           variant="outline"
                           size="sm"
                           onClick={() => handleEditBook(project.id)}
-                          className="flex-1"
+                          className="flex-1 hover:bg-blue-50 hover:border-blue-200"
                           data-testid={`button-edit-${project.id}`}
                         >
                           <Edit className="mr-1" size={14} />
@@ -226,7 +277,7 @@ export default function MyBooksPage() {
                           variant="outline"
                           size="sm"
                           onClick={() => handleViewBook(project.id)}
-                          className="flex-1"
+                          className="flex-1 hover:bg-green-50 hover:border-green-200"
                           data-testid={`button-view-${project.id}`}
                         >
                           <Eye className="mr-1" size={14} />
@@ -236,7 +287,7 @@ export default function MyBooksPage() {
                           variant="outline"
                           size="sm"
                           onClick={() => setDeleteProjectId(project.id)}
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50 hover:border-red-200"
                           data-testid={`button-delete-${project.id}`}
                         >
                           <Trash2 size={14} />
