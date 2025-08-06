@@ -77,7 +77,7 @@ function Router() {
 }
 
 function App() {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
   
   return (
     <QueryClientProvider client={queryClient}>
