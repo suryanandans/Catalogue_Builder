@@ -80,8 +80,11 @@ function App() {
   const [sidebarOpen, setSidebarOpen] = useState(false); // false = sidebar visible, true = sidebar hidden
   
   const handleSidebarToggle = (value: boolean) => {
-    console.log('handleSidebarToggle called with:', value);
-    setSidebarOpen(value);
+    console.log('handleSidebarToggle called - current:', sidebarOpen, 'new:', value);
+    setSidebarOpen(prev => {
+      console.log('setSidebarOpen updater - prev:', prev, 'new:', value);
+      return value;
+    });
   };
   
   console.log('App render - sidebarOpen:', sidebarOpen);

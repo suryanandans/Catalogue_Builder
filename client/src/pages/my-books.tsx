@@ -266,7 +266,7 @@ export default function MyBooksPage() {
             </Button>
           </motion.div>
         ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-8">
             {projects.map((project, index) => (
               <motion.div
                 key={project.id}
@@ -274,7 +274,7 @@ export default function MyBooksPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
               >
-                <Card className="hover:shadow-xl transition-all duration-300 group hover:-translate-y-2 overflow-hidden">
+                <Card className="hover:shadow-xl transition-all duration-300 group hover:-translate-y-2 overflow-hidden w-full max-w-sm mx-auto">
                   {/* 3D Book Thumbnail with Enhanced Appearance */}
                   <div className="relative p-4 bg-transparent">
                     <div className="relative group-hover:transform group-hover:-rotate-1 transition-transform duration-300">
@@ -384,7 +384,7 @@ export default function MyBooksPage() {
                       </div>
                       
                       {/* Action Buttons */}
-                      <div className="flex space-x-2 pt-2">
+                      <div className="flex space-x-2 pt-2 justify-between">
                         <Button
                           variant="outline"
                           size="sm"
@@ -418,10 +418,10 @@ export default function MyBooksPage() {
                           variant="outline"
                           size="sm"
                           onClick={() => setDeleteProjectId(project.id)}
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50 hover:border-red-200 min-w-[2rem] flex items-center justify-center"
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50 hover:border-red-200 min-w-[2.5rem] flex items-center justify-center px-3"
                           data-testid={`button-delete-${project.id}`}
                         >
-                          <Trash2 size={14} className="text-red-600" />
+                          <Trash2 size={16} className="text-red-600" />
                         </Button>
                       </div>
                     </div>
