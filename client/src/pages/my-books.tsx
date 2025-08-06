@@ -275,90 +275,90 @@ export default function MyBooksPage() {
                 transition={{ duration: 0.6, delay: index * 0.1 }}
               >
                 <Card className="hover:shadow-xl transition-all duration-300 group hover:-translate-y-2 overflow-hidden">
-                  {/* 3D Book Thumbnail */}
-                  <div className="relative">
-                    <div className="relative h-48 perspective-1000">
-                      {/* Book spine and 3D effect */}
-                      <div className="absolute inset-0 transform-gpu">
-                        {/* Back cover */}
-                        <div className="absolute inset-0 bg-gray-800 transform translate-x-2 translate-y-2 rounded-sm"></div>
+                  {/* 3D Book Thumbnail with Enhanced Appearance */}
+                  <div className="relative p-4 bg-transparent">
+                    <div className="relative group-hover:transform group-hover:-rotate-1 transition-transform duration-300">
+                      {/* Book Shadow */}
+                      <div className="absolute -bottom-2 -right-2 w-full h-full bg-gray-400/30 rounded transform rotate-1"></div>
+                      
+                      {/* Book Spine */}
+                      <div className="absolute -right-3 top-2 w-4 h-[calc(100%-16px)] bg-gradient-to-b from-gray-400 to-gray-600 rounded-r-sm transform skew-y-1 shadow-md"></div>
+                      
+                      {/* Book Cover */}
+                      <div className="relative h-56 bg-white border-2 border-gray-200 rounded-sm shadow-xl overflow-hidden aspect-[3/4] transform transition-all duration-300 group-hover:scale-105">
+                        {/* Thumbnail content */}
+                        {(() => {
+                          const thumbnail = getBookThumbnail(project);
+                          const isImage = thumbnail && (!thumbnail.startsWith('from-') && !thumbnail.includes('gradient'));
+                          
+                          if (isImage) {
+                            return (
+                              <div className="h-full relative">
+                                <img 
+                                  src={thumbnail} 
+                                  alt={project.title}
+                                  className="w-full h-full object-cover"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+                                <div className="absolute bottom-2 left-2 right-2 text-white">
+                                  <div className="font-medium text-sm leading-tight line-clamp-2 drop-shadow-lg">
+                                    {project.title}
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          } else {
+                            return (
+                              <div className={`h-full bg-gradient-to-br ${thumbnail} flex items-center justify-center relative overflow-hidden`}>
+                                <div className="absolute inset-0 bg-black/10"></div>
+                                <div className="relative z-10 text-center">
+                                  <Book className="text-white/80 mx-auto mb-2" size={32} />
+                                  <div className="text-white/90 font-medium text-sm px-2 leading-tight line-clamp-2">
+                                    {project.title}
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          }
+                        })()}
                         
-                        {/* Book cover */}
-                        <div className="relative h-full bg-white border border-gray-200 rounded-sm shadow-lg overflow-hidden">
-                          {/* Thumbnail content */}
-                          {(() => {
-                            const thumbnail = getBookThumbnail(project);
-                            const isImage = thumbnail && (!thumbnail.startsWith('from-') && !thumbnail.includes('gradient'));
-                            
-                            if (isImage) {
-                              return (
-                                <div className="h-full relative">
-                                  <img 
-                                    src={thumbnail} 
-                                    alt={project.title}
-                                    className="w-full h-full object-cover"
-                                  />
-                                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
-                                  <div className="absolute bottom-2 left-2 right-2 text-white">
-                                    <div className="font-medium text-sm leading-tight line-clamp-2 drop-shadow-lg">
-                                      {project.title}
-                                    </div>
-                                  </div>
-                                </div>
-                              );
-                            } else {
-                              return (
-                                <div className={`h-full bg-gradient-to-br ${thumbnail} flex items-center justify-center relative overflow-hidden`}>
-                                  <div className="absolute inset-0 bg-black/10"></div>
-                                  <div className="relative z-10 text-center">
-                                    <Book className="text-white/80 mx-auto mb-2" size={32} />
-                                    <div className="text-white/90 font-medium text-sm px-2 leading-tight line-clamp-2">
-                                      {project.title}
-                                    </div>
-                                  </div>
-                                </div>
-                              );
-                            }
-                          })()}
-                          
-                          {/* Thumbnail upload button */}
-                          <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <Button
-                              size="sm"
-                              variant="secondary"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleThumbnailClick(project.id);
-                              }}
-                              className="w-8 h-8 p-1.5 bg-white/90 hover:bg-white"
-                            >
-                              <Upload size={12} />
-                            </Button>
-                          </div>
-                          
-                          {/* Hover overlay with quick actions */}
-                          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center space-x-2">
-                            <Button
-                              size="sm"
-                              variant="secondary"
-                              onClick={() => handleViewBook(project.id)}
-                              className="opacity-90 hover:opacity-100"
-                              data-testid={`button-quick-view-${project.id}`}
-                            >
-                              <Eye className="mr-1" size={14} />
-                              View
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="secondary"
-                              onClick={() => handleEditBook(project.id)}
-                              className="opacity-90 hover:opacity-100"
-                              data-testid={`button-quick-edit-${project.id}`}
-                            >
-                              <Edit className="mr-1" size={14} />
-                              Edit
-                            </Button>
-                          </div>
+                        {/* Thumbnail upload button */}
+                        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleThumbnailClick(project.id);
+                            }}
+                            className="w-8 h-8 p-1.5 bg-white/90 hover:bg-white"
+                          >
+                            <Upload size={12} />
+                          </Button>
+                        </div>
+                        
+                        {/* Hover overlay with quick actions */}
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center space-x-2">
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            onClick={() => handleViewBook(project.id)}
+                            className="opacity-90 hover:opacity-100"
+                            data-testid={`button-quick-view-${project.id}`}
+                          >
+                            <Eye className="mr-1" size={14} />
+                            View
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="secondary"
+                            onClick={() => handleEditBook(project.id)}
+                            className="opacity-90 hover:opacity-100"
+                            data-testid={`button-quick-edit-${project.id}`}
+                          >
+                            <Edit className="mr-1" size={14} />
+                            Edit
+                          </Button>
                         </div>
                       </div>
                     </div>

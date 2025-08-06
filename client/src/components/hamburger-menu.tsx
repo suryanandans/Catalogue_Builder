@@ -103,14 +103,9 @@ export default function HamburgerMenu() {
         <Menu className="h-5 w-5" />
       </Button>
 
-      {/* Debug info */}
-      <div className="fixed top-20 right-4 bg-red-500 text-white p-2 text-xs z-50">
-        Sidebar: {isOpen ? 'HIDDEN' : 'VISIBLE'} | Viewer: {isViewerPage ? 'YES' : 'NO'}
-      </div>
-
       {/* Static Sidebar - Always visible on non-viewer pages except when manually closed */}
       {!isViewerPage && (
-        <div className={`fixed left-0 top-16 h-[calc(100vh-4rem)] w-80 bg-white shadow-lg border-r border-gray-200 z-40 transform transition-transform duration-300 ease-in-out ${
+        <div className={`fixed left-0 top-16 h-[calc(100vh-4rem)] w-80 bg-white shadow-md border-r border-gray-200 z-30 transform transition-transform duration-300 ease-in-out ${
           isOpen ? '-translate-x-full' : 'translate-x-0'
         }`}>
           {/* Sidebar Header */}
@@ -123,7 +118,7 @@ export default function HamburgerMenu() {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => setIsOpen(false)}
+                onClick={() => setIsOpen(true)}
                 className="hover:bg-gray-100"
               >
                 <X className="h-4 w-4" />
