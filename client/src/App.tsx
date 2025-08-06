@@ -36,7 +36,7 @@ function Navigation() {
   return (
     <nav className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
       <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-300 ${
-        isOpen && !isViewerPage ? 'ml-80' : ''
+        !isOpen && !isViewerPage ? 'ml-80' : ''
       }`}>
         <div className="flex justify-between items-center h-16">
           {/* Left side - Hamburger menu and logo */}
@@ -77,7 +77,7 @@ function Router() {
 }
 
 function App() {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false); // false = sidebar visible, true = sidebar hidden
   
   return (
     <QueryClientProvider client={queryClient}>

@@ -240,7 +240,7 @@ export default function EditorPage() {
 
   return (
     <div className={`flex h-screen transition-all duration-300 ${
-      isOpen ? 'ml-80' : ''
+      !isOpen ? 'ml-80' : ''
     }`}>
       {/* Left Sidebar - Templates & Eye Icons */}
       <div className="w-80 bg-white shadow-lg border-r border-gray-200 flex flex-col">
