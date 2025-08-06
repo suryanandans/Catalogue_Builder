@@ -10,10 +10,12 @@ import TemplateGrid from "@/components/template-grid";
 import PageCanvas from "@/components/page-canvas";
 import PropertiesPanel from "@/components/properties-panel";
 import EyeIconPalette from "@/components/eye-icon-palette";
+import { useSidebar } from "@/App";
 
 export default function EditorPage() {
   const [, navigate] = useLocation();
   const { toast } = useToast();
+  const { isOpen } = useSidebar();
   const [currentProject, setCurrentProject] = useState<BookProject | null>(null);
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
   const [selectedContent, setSelectedContent] = useState<PageContent | undefined>();
@@ -237,7 +239,9 @@ export default function EditorPage() {
   const currentPage = currentProject.pages[currentPageIndex];
 
   return (
-    <div className="flex h-screen">
+    <div className={`flex h-screen transition-all duration-300 ${
+      isOpen ? 'ml-80' : ''
+    }`}>
       {/* Left Sidebar - Templates & Eye Icons */}
       <div className="w-80 bg-white shadow-lg border-r border-gray-200 flex flex-col">
         {/* Tab Headers */}

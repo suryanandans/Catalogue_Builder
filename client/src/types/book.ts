@@ -35,6 +35,7 @@ export interface BookProject {
   pages: BookPage[];
   createdAt: string;
   updatedAt: string;
+  customThumbnail?: string;
 }
 
 export interface Template {

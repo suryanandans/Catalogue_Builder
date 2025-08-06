@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useLocation } from "wouter";
-import { Plus, Edit, Eye, Trash2, Book, Calendar, FileText } from "lucide-react";
+import { Plus, Edit, Eye, Trash2, Book, Calendar, FileText, Upload, Image } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -9,14 +9,18 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { LocalStorage } from "@/lib/storage";
 import { BookProject } from "@/types/book";
+import { useSidebar } from "@/App";
 
 export default function MyBooksPage() {
   const [, navigate] = useLocation();
   const { toast } = useToast();
+  const { isOpen } = useSidebar();
   const [projects, setProjects] = useState<BookProject[]>([]);
   const [newBookTitle, setNewBookTitle] = useState("");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [deleteProjectId, setDeleteProjectId] = useState<string | null>(null);
+  const [editingThumbnail, setEditingThumbnail] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     loadProjects();
@@ -70,7 +74,45 @@ export default function MyBooksPage() {
   };
 
   const handleViewBook = (projectId: string) => {
-    navigate(`/viewer?projectId=${projectId}`);
+    navigate(`/viewer?projectId=${projectId}&from=books`);
+  };
+
+  const handleThumbnailUpload = (projectId: string, file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const result = e.target?.result as string;
+      if (result) {
+        const project = LocalStorage.getProject(projectId);
+        if (project) {
+          (project as any).customThumbnail = result;
+          LocalStorage.updateProject(project);
+          loadProjects();
+          toast({
+            title: "Thumbnail Updated",
+            description: "Your book thumbnail has been updated successfully."
+          });
+        }
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleThumbnailClick = (projectId: string) => {
+    setEditingThumbnail(projectId);
+    fileInputRef.current?.click();
+  };
+
+  const getFirstPageThumbnail = (project: BookProject): string => {
+    // Try to get the first page with content
+    for (const page of project.pages) {
+      if (page.left?.content?.image) {
+        return page.left.content.image;
+      }
+      if (page.right?.content?.image) {
+        return page.right.content.image;
+      }
+    }
+    return '';
   };
 
   const getPageCount = (project: BookProject) => {
@@ -95,6 +137,17 @@ export default function MyBooksPage() {
   };
 
   const getBookThumbnail = (project: BookProject) => {
+    // Return custom thumbnail if available
+    if ((project as any).customThumbnail) {
+      return (project as any).customThumbnail;
+    }
+    
+    // Try to get first page image
+    const firstPageImage = getFirstPageThumbnail(project);
+    if (firstPageImage) {
+      return firstPageImage;
+    }
+    
     // Generate a random gradient for each book based on its ID
     const colors = [
       'from-blue-400 to-blue-600',
@@ -113,7 +166,24 @@ export default function MyBooksPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 transition-all duration-300 ${
+        isOpen ? 'ml-80' : ''
+      }`}>
+      
+      {/* Hidden file input for thumbnail upload */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file && editingThumbnail) {
+            handleThumbnailUpload(editingThumbnail, file);
+            setEditingThumbnail(null);
+          }
+        }}
+      />
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
@@ -205,39 +275,91 @@ export default function MyBooksPage() {
                 transition={{ duration: 0.6, delay: index * 0.1 }}
               >
                 <Card className="hover:shadow-xl transition-all duration-300 group hover:-translate-y-2 overflow-hidden">
-                  {/* Book Thumbnail */}
+                  {/* 3D Book Thumbnail */}
                   <div className="relative">
-                    <div className={`h-48 bg-gradient-to-br ${getBookThumbnail(project)} flex items-center justify-center relative overflow-hidden`}>
-                      <div className="absolute inset-0 bg-black/10"></div>
-                      <div className="relative z-10 text-center">
-                        <Book className="text-white/80 mx-auto mb-2" size={32} />
-                        <div className="text-white/90 font-medium text-sm px-2 leading-tight line-clamp-2">
-                          {project.title}
+                    <div className="relative h-48 perspective-1000">
+                      {/* Book spine and 3D effect */}
+                      <div className="absolute inset-0 transform-gpu">
+                        {/* Back cover */}
+                        <div className="absolute inset-0 bg-gray-800 transform translate-x-2 translate-y-2 rounded-sm"></div>
+                        
+                        {/* Book cover */}
+                        <div className="relative h-full bg-white border border-gray-200 rounded-sm shadow-lg overflow-hidden">
+                          {/* Thumbnail content */}
+                          {(() => {
+                            const thumbnail = getBookThumbnail(project);
+                            const isImage = thumbnail && (!thumbnail.startsWith('from-') && !thumbnail.includes('gradient'));
+                            
+                            if (isImage) {
+                              return (
+                                <div className="h-full relative">
+                                  <img 
+                                    src={thumbnail} 
+                                    alt={project.title}
+                                    className="w-full h-full object-cover"
+                                  />
+                                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+                                  <div className="absolute bottom-2 left-2 right-2 text-white">
+                                    <div className="font-medium text-sm leading-tight line-clamp-2 drop-shadow-lg">
+                                      {project.title}
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            } else {
+                              return (
+                                <div className={`h-full bg-gradient-to-br ${thumbnail} flex items-center justify-center relative overflow-hidden`}>
+                                  <div className="absolute inset-0 bg-black/10"></div>
+                                  <div className="relative z-10 text-center">
+                                    <Book className="text-white/80 mx-auto mb-2" size={32} />
+                                    <div className="text-white/90 font-medium text-sm px-2 leading-tight line-clamp-2">
+                                      {project.title}
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            }
+                          })()}
+                          
+                          {/* Thumbnail upload button */}
+                          <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <Button
+                              size="sm"
+                              variant="secondary"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleThumbnailClick(project.id);
+                              }}
+                              className="w-8 h-8 p-1.5 bg-white/90 hover:bg-white"
+                            >
+                              <Upload size={12} />
+                            </Button>
+                          </div>
+                          
+                          {/* Hover overlay with quick actions */}
+                          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center space-x-2">
+                            <Button
+                              size="sm"
+                              variant="secondary"
+                              onClick={() => handleViewBook(project.id)}
+                              className="opacity-90 hover:opacity-100"
+                              data-testid={`button-quick-view-${project.id}`}
+                            >
+                              <Eye className="mr-1" size={14} />
+                              View
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="secondary"
+                              onClick={() => handleEditBook(project.id)}
+                              className="opacity-90 hover:opacity-100"
+                              data-testid={`button-quick-edit-${project.id}`}
+                            >
+                              <Edit className="mr-1" size={14} />
+                              Edit
+                            </Button>
+                          </div>
                         </div>
-                      </div>
-                      
-                      {/* Hover overlay with quick actions */}
-                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center space-x-2">
-                        <Button
-                          size="sm"
-                          variant="secondary"
-                          onClick={() => handleViewBook(project.id)}
-                          className="opacity-90 hover:opacity-100"
-                          data-testid={`button-quick-view-${project.id}`}
-                        >
-                          <Eye className="mr-1" size={14} />
-                          View
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="secondary"
-                          onClick={() => handleEditBook(project.id)}
-                          className="opacity-90 hover:opacity-100"
-                          data-testid={`button-quick-edit-${project.id}`}
-                        >
-                          <Edit className="mr-1" size={14} />
-                          Edit
-                        </Button>
                       </div>
                     </div>
                   </div>
@@ -282,6 +404,15 @@ export default function MyBooksPage() {
                         >
                           <Eye className="mr-1" size={14} />
                           View
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleThumbnailClick(project.id)}
+                          className="hover:bg-orange-50 hover:border-orange-200"
+                          data-testid={`button-thumbnail-${project.id}`}
+                        >
+                          <Image size={14} />
                         </Button>
                         <Button
                           variant="outline"

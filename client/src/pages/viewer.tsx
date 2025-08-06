@@ -83,10 +83,13 @@ const createDemoContent = (demoProject: BookProject) => {
 export default function ViewerPage() {
   const [, navigate] = useLocation();
   const [currentProject, setCurrentProject] = useState<BookProject | null>(null);
+  const [fromPage, setFromPage] = useState<string>('editor');
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const projectId = urlParams.get('projectId');
+    const from = urlParams.get('from') || 'editor';
+    setFromPage(from);
     
     if (projectId) {
       // Load specific project by ID
@@ -142,12 +145,18 @@ export default function ViewerPage() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => navigate(currentProject ? `/editor?projectId=${currentProject.id}` : "/my-books")}
+              onClick={() => {
+                if (fromPage === 'books') {
+                  navigate("/my-books");
+                } else {
+                  navigate(currentProject ? `/editor?projectId=${currentProject.id}` : "/my-books");
+                }
+              }}
               className="text-white/80 hover:text-white"
               data-testid="button-back-to-editor"
             >
               <ArrowLeft className="mr-2" size={16} />
-              Back to Editor
+              {fromPage === 'books' ? 'Back to My Books' : 'Back to Editor'}
             </Button>
             
             <select

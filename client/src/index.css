@@ -116,6 +116,40 @@
     linear-gradient(145deg, transparent 0%, rgba(0,0,0,0.02) 100%);
 }
 
+/* 3D Book Thumbnail Effect */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.book-thumbnail-3d {
+  transform-style: preserve-3d;
+  transition: transform 0.3s ease;
+}
+
+.book-thumbnail-3d:hover {
+  transform: rotateY(-5deg) rotateX(5deg);
+}
+
+.book-spine {
+  background: linear-gradient(90deg, 
+    rgba(0,0,0,0.3) 0%, 
+    rgba(0,0,0,0.1) 50%, 
+    rgba(0,0,0,0.3) 100%);
+}
+
+.book-cover-front {
+  transform: translateZ(4px);
+}
+
+.book-cover-back {
+  transform: translateZ(-2px);
+}
+
+/* Book shadow effect */
+.book-shadow {
+  filter: drop-shadow(2px 4px 8px rgba(0,0,0,0.2));
+}
+
 .dark {
   --background: hsl(240, 10%, 3.9%);
   --foreground: hsl(0, 0%, 98%);

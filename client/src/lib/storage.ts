@@ -145,4 +145,8 @@ export class LocalStorage {
     this.saveProject(project);
     return project;
   }
+
+  static updateProject(project: BookProject): void {
+    this.saveProject({ ...project, updatedAt: new Date().toISOString() });
+  }
 }

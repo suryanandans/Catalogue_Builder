@@ -1,15 +1,8 @@
-import { useState } from "react";
-import { Menu, Book, Eye, User, Settings, HelpCircle, LogOut } from "lucide-react";
+import { Menu, Book, Eye, User, Settings, HelpCircle, LogOut, X } from "lucide-react";
 import { useLocation } from "wouter";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { useSidebar } from "@/App";
 
 interface MenuItemProps {
   icon: React.ElementType;
@@ -37,11 +30,13 @@ function MenuItem({ icon: Icon, label, onClick, description }: MenuItemProps) {
 
 export default function HamburgerMenu() {
   const [, navigate] = useLocation();
-  const [isOpen, setIsOpen] = useState(false);
+  const [location] = useLocation();
+  const { isOpen, setIsOpen } = useSidebar();
+  const isViewerPage = location.startsWith('/viewer') || location.startsWith('/demo');
 
   const handleNavigation = (path: string) => {
     navigate(path);
-    setIsOpen(false);
+    // Don't close sidebar on navigation for non-viewer pages
   };
 
   const menuSections = [
@@ -93,66 +88,91 @@ export default function HamburgerMenu() {
   ];
 
   return (
-    <Sheet open={isOpen} onOpenChange={setIsOpen}>
-      <SheetTrigger asChild>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="hover:bg-gray-100"
-          data-testid="hamburger-menu-trigger"
-        >
-          <Menu className="h-5 w-5" />
-        </Button>
-      </SheetTrigger>
-      <SheetContent side="left" className="w-80 sm:max-w-80">
-        <SheetHeader className="text-left">
-          <SheetTitle className="flex items-center space-x-2">
-            <Book className="text-bookcraft-primary" size={24} />
-            <span>BookCraft Menu</span>
-          </SheetTitle>
-        </SheetHeader>
-        
-        <div className="mt-6 space-y-6">
-          {menuSections.map((section, index) => (
-            <div key={section.title}>
-              <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide px-4 mb-2">
-                {section.title}
-              </h3>
-              <div className="space-y-1">
-                {section.items.map((item) => (
-                  <MenuItem
-                    key={item.label}
-                    icon={item.icon}
-                    label={item.label}
-                    description={item.description}
-                    onClick={item.onClick}
-                  />
-                ))}
+    <>
+      {/* Hamburger Button */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="hover:bg-gray-100"
+        onClick={() => setIsOpen(!isOpen)}
+        data-testid="hamburger-menu-trigger"
+      >
+        <Menu className="h-5 w-5" />
+      </Button>
+
+      {/* Static Sidebar - Hidden on viewer pages */}
+      {!isViewerPage && (
+        <div className={`fixed left-0 top-16 h-[calc(100vh-4rem)] w-80 bg-white shadow-lg border-r border-gray-200 z-40 transform transition-transform duration-300 ease-in-out ${
+          isOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}>
+          {/* Sidebar Header */}
+          <div className="p-4 border-b border-gray-200">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Book className="text-bookcraft-primary" size={24} />
+                <span className="text-lg font-semibold">BookCraft Menu</span>
               </div>
-              {index < menuSections.length - 1 && (
-                <Separator className="mt-4" />
-              )}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsOpen(false)}
+                className="hover:bg-gray-100"
+              >
+                <X className="h-4 w-4" />
+              </Button>
             </div>
-          ))}
+          </div>
           
-          <Separator />
-          
-          {/* Logout Section */}
-          <div className="px-4">
-            <button
-              onClick={() => {
-                // Handle logout logic here
-                console.log("Logout clicked");
-                setIsOpen(false);
-              }}
-              className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-red-50 rounded-lg transition-colors text-red-600"
-            >
-              <LogOut size={20} />
-              <span className="font-medium">Sign Out</span>
-            </button>
+          {/* Sidebar Content */}
+          <div className="p-4 space-y-6 overflow-y-auto h-full">
+            {menuSections.map((section, index) => (
+              <div key={section.title}>
+                <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wide px-4 mb-2">
+                  {section.title}
+                </h3>
+                <div className="space-y-1">
+                  {section.items.map((item) => (
+                    <MenuItem
+                      key={item.label}
+                      icon={item.icon}
+                      label={item.label}
+                      description={item.description}
+                      onClick={item.onClick}
+                    />
+                  ))}
+                </div>
+                {index < menuSections.length - 1 && (
+                  <Separator className="mt-4" />
+                )}
+              </div>
+            ))}
+            
+            <Separator />
+            
+            {/* Logout Section */}
+            <div className="px-4">
+              <button
+                onClick={() => {
+                  // Handle logout logic here
+                  console.log("Logout clicked");
+                }}
+                className="w-full flex items-center space-x-3 px-4 py-3 text-left hover:bg-red-50 rounded-lg transition-colors text-red-600"
+              >
+                <LogOut size={20} />
+                <span className="font-medium">Sign Out</span>
+              </button>
+            </div>
           </div>
         </div>
-      </SheetContent>
-    </Sheet>
+      )}
+      
+      {/* Overlay for mobile */}
+      {!isViewerPage && isOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+    </>
   );
 }

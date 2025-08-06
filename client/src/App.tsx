@@ -1,4 +1,5 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
+import { useState, createContext, useContext } from "react";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -16,10 +17,27 @@ import NotFound from "@/pages/not-found";
 import HamburgerMenu from "@/components/hamburger-menu";
 import ProfileDropdown from "@/components/profile-dropdown";
 
+// Context for sidebar state
+const SidebarContext = createContext<{
+  isOpen: boolean;
+  setIsOpen: (open: boolean) => void;
+}>({
+  isOpen: false,
+  setIsOpen: () => {},
+});
+
+export const useSidebar = () => useContext(SidebarContext);
+
 function Navigation() {
+  const { isOpen } = useSidebar();
+  const [location] = useLocation();
+  const isViewerPage = location.startsWith('/viewer') || location.startsWith('/demo');
+  
   return (
     <nav className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 transition-all duration-300 ${
+        isOpen && !isViewerPage ? 'ml-80' : ''
+      }`}>
         <div className="flex justify-between items-center h-16">
           {/* Left side - Hamburger menu and logo */}
           <div className="flex items-center space-x-4">
@@ -59,20 +77,24 @@ function Router() {
 }
 
 function App() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <div className="min-h-screen bg-bookcraft-gray-50">
-          <Navigation />
-          <motion.main
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.3 }}
-          >
-            <Router />
-          </motion.main>
-        </div>
-        <Toaster />
+        <SidebarContext.Provider value={{ isOpen: sidebarOpen, setIsOpen: setSidebarOpen }}>
+          <div className="min-h-screen bg-bookcraft-gray-50">
+            <Navigation />
+            <motion.main
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Router />
+            </motion.main>
+          </div>
+          <Toaster />
+        </SidebarContext.Provider>
       </TooltipProvider>
     </QueryClientProvider>
   );
