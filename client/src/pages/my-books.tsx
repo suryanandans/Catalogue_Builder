@@ -418,10 +418,10 @@ export default function MyBooksPage() {
                           variant="outline"
                           size="sm"
                           onClick={() => setDeleteProjectId(project.id)}
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50 hover:border-red-200"
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50 hover:border-red-200 min-w-[2rem] flex items-center justify-center"
                           data-testid={`button-delete-${project.id}`}
                         >
-                          <Trash2 size={14} />
+                          <Trash2 size={14} className="text-red-600" />
                         </Button>
                       </div>
                     </div>
