@@ -228,11 +228,11 @@ export default function PropertiesPanel({ selectedContent, onContentUpdate }: Pr
                     onChange={(value) => handleRichTextChange('quote', value)}
                     className="mb-4"
                   />
-                  <Label className="text-sm font-medium text-gray-700 mb-2 block">Author</Label>
+                  <Label className="text-sm font-medium text-gray-700 mb-2 block">Author (Optional)</Label>
                   <Input
                     value={selectedContent.content.author || ""}
                     onChange={(e) => handleRichTextChange('author', e.target.value)}
-                    placeholder="Author name"
+                    placeholder="Author name (leave empty to hide)"
                     data-testid="input-author"
                   />
                 </div>
@@ -406,11 +406,11 @@ export default function PropertiesPanel({ selectedContent, onContentUpdate }: Pr
                     </>
                   )}
                   
-                  <Label className="text-sm font-medium text-gray-700 mb-2 block">Title</Label>
+                  <Label className="text-sm font-medium text-gray-700 mb-2 block">Title (Optional)</Label>
                   <Input
                     value={selectedContent.content.title || ""}
                     onChange={(e) => handleRichTextChange('title', e.target.value)}
-                    placeholder="Hero title"
+                    placeholder="Hero title (leave empty to hide overlay)"
                     data-testid="input-hero-title"
                   />
                 </div>
@@ -426,23 +426,31 @@ export default function PropertiesPanel({ selectedContent, onContentUpdate }: Pr
                       multiple
                       onChange={(e) => {
                         const files = Array.from(e.target.files || []);
+                        if (files.length === 0) return;
+                        
                         const newImages: string[] = [];
                         let loadedCount = 0;
                         
-                        files.forEach(file => {
+                        files.forEach((file, index) => {
                           const reader = new FileReader();
                           reader.onload = (event) => {
-                            newImages.push(event.target?.result as string);
+                            const result = event.target?.result as string;
+                            newImages[index] = result; // Preserve order
                             loadedCount++;
                             
                             if (loadedCount === files.length && selectedContent && onContentUpdate) {
+                              // Filter out any undefined values and add to existing images
+                              const validNewImages = newImages.filter(Boolean);
                               onContentUpdate({
                                 ...selectedContent,
                                 content: {
                                   ...selectedContent.content,
-                                  images: [...(selectedContent.content.images || []), ...newImages]
+                                  images: [...(selectedContent.content.images || []), ...validNewImages]
                                 }
                               });
+                              
+                              // Reset the input so the same files can be selected again if needed
+                              e.target.value = '';
                             }
                           };
                           reader.readAsDataURL(file);
@@ -457,18 +465,40 @@ export default function PropertiesPanel({ selectedContent, onContentUpdate }: Pr
                     >
                       <Upload className="mb-2 mx-auto" size={24} />
                       <br />
-                      Upload Images (Multiple)
+                      {selectedContent.content.images && selectedContent.content.images.length > 0 
+                        ? 'Add More Images' 
+                        : 'Upload Images (Multiple)'}
                     </Button>
                   </div>
                   
                   {selectedContent.content.images && selectedContent.content.images.length > 0 && (
                     <div className="mb-4">
-                      <Label className="text-sm font-medium text-gray-700 mb-2 block">
-                        Uploaded Images ({selectedContent.content.images.length})
-                      </Label>
+                      <div className="flex items-center justify-between mb-2">
+                        <Label className="text-sm font-medium text-gray-700">
+                          Uploaded Images ({selectedContent.content.images.length})
+                        </Label>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            if (selectedContent && onContentUpdate) {
+                              onContentUpdate({
+                                ...selectedContent,
+                                content: {
+                                  ...selectedContent.content,
+                                  images: []
+                                }
+                              });
+                            }
+                          }}
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        >
+                          Clear All
+                        </Button>
+                      </div>
                       <div className="grid grid-cols-2 gap-2 max-h-32 overflow-y-auto">
                         {selectedContent.content.images.map((image: string, index: number) => (
-                          <div key={index} className="relative">
+                          <div key={index} className="relative group">
                             <img 
                               src={image} 
                               alt={`Grid image ${index + 1}`} 
@@ -487,11 +517,47 @@ export default function PropertiesPanel({ selectedContent, onContentUpdate }: Pr
                                   });
                                 }
                               }}
-                              className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 text-xs flex items-center justify-center hover:bg-red-600"
+                              className="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center hover:bg-red-600 opacity-0 group-hover:opacity-100 transition-opacity"
+                              title="Remove image"
                             >
                               ×
                             </button>
+                            <div className="absolute bottom-1 left-1 bg-black/60 text-white px-1 rounded text-xs">
+                              {index + 1}
+                            </div>
                           </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {selectedContent.content.images && selectedContent.content.images.length > 0 && (
+                    <div className="mb-4">
+                      <Label className="text-sm font-medium text-gray-700 mb-2 block">Image Fit</Label>
+                      <div className="grid grid-cols-2 gap-2">
+                        {imageFitOptions.map((option) => (
+                          <button
+                            key={option.value}
+                            onClick={() => {
+                              if (selectedContent && onContentUpdate) {
+                                onContentUpdate({
+                                  ...selectedContent,
+                                  content: {
+                                    ...selectedContent.content,
+                                    imageFit: option.value
+                                  }
+                                });
+                              }
+                            }}
+                            className={`p-2 text-xs border rounded transition-colors ${
+                              (selectedContent.content.imageFit || 'object-cover') === option.value
+                                ? 'border-bookcraft-primary bg-bookcraft-primary/10 text-bookcraft-primary'
+                                : 'border-gray-300 text-gray-600 hover:border-gray-400'
+                            }`}
+                            title={option.description}
+                          >
+                            {option.name}
+                          </button>
                         ))}
                       </div>
                     </div>
@@ -502,11 +568,11 @@ export default function PropertiesPanel({ selectedContent, onContentUpdate }: Pr
               {/* Video Player Template */}
               {selectedContent.template === 'video-player' && (
                 <div>
-                  <Label className="text-sm font-medium text-gray-700 mb-2 block">Video Title</Label>
+                  <Label className="text-sm font-medium text-gray-700 mb-2 block">Video Title (Optional)</Label>
                   <Input
                     value={selectedContent.content.title || ""}
                     onChange={(e) => handleRichTextChange('title', e.target.value)}
-                    placeholder="Video title"
+                    placeholder="Video title (leave empty to hide overlay)"
                     data-testid="input-video-title"
                     className="mb-4"
                   />

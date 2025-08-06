@@ -130,19 +130,21 @@ export const templates: Template[] = [
             </div>
           </div>
         )}
-        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4" style={{ borderRadius: "0 0 4px 4px" }}>
-          <h3 
-            className="text-white font-bold text-lg" 
-            data-testid="text-hero-title"
-            style={{ color: '#ffffff' }}
-          >
-            {props.title || "Hero Title"}
-          </h3>
-        </div>
+        {props.title && props.title.trim() && (
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4" style={{ borderRadius: "0 0 4px 4px" }}>
+            <h3 
+              className="text-white font-bold text-lg" 
+              data-testid="text-hero-title"
+              style={{ color: '#ffffff' }}
+            >
+              {props.title}
+            </h3>
+          </div>
+        )}
       </div>
     ),
     defaultProps: {
-      title: "Hero Title",
+      title: "",
       image: null
     }
   },
@@ -165,19 +167,21 @@ export const templates: Template[] = [
             style={{ color: '#000000' }}
             dangerouslySetInnerHTML={{ __html: props.quote || "This is an inspiring quote that adds meaning to your content." }}
           />
-          <cite 
-            className="text-sm text-black" 
-            data-testid="text-author"
-            style={{ color: '#000000' }}
-          >
-            — {props.author || "Author Name"}
-          </cite>
+          {props.author && props.author.trim() && (
+            <cite 
+              className="text-sm text-black" 
+              data-testid="text-author"
+              style={{ color: '#000000' }}
+            >
+              — {props.author}
+            </cite>
+          )}
         </div>
       </div>
     ),
     defaultProps: {
       quote: "This is an inspiring quote that adds meaning to your content.",
-      author: "Author Name"
+      author: ""
     }
   },
   {
@@ -288,7 +292,7 @@ export const templates: Template[] = [
             </div>
           </div>
         )}
-        {props.title && (
+        {props.title && props.title.trim() && (
           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3">
             <h3 
               className="text-white font-semibold text-sm" 
@@ -302,7 +306,7 @@ export const templates: Template[] = [
       </div>
     ),
     defaultProps: {
-      title: "Video Title",
+      title: "",
       videoUrl: null,
       thumbnail: null
     }
