@@ -19,6 +19,8 @@ export interface PageContent {
     [mediaId: string]: MediaLink;
   };
   eyeIcons?: EyeIconInstance[];
+  backgroundColor?: string;
+  backgroundImage?: string;
 }
 
 export interface BookPage {

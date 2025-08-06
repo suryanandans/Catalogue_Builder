@@ -76,6 +76,8 @@ export default function PageCanvas({
             ...pageContent.content,
             mediaLinks: pageContent.mediaLinks,
             eyeIcons: pageContent.eyeIcons || [],
+            backgroundColor: pageContent.backgroundColor,
+            backgroundImage: pageContent.backgroundImage,
             isPreview,
             onEyeIconsUpdate: (eyeIcons: any[]) => {
               if (onContentUpdate) {

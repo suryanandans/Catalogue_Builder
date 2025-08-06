@@ -17,6 +17,7 @@ interface PropertiesPanelProps {
 export default function PropertiesPanel({ selectedContent, onContentUpdate }: PropertiesPanelProps) {
   const [fontSize, setFontSize] = useState([16]);
   const [textColor, setTextColor] = useState("#000000");
+  const [backgroundColor, setBackgroundColor] = useState(selectedContent?.backgroundColor || "#ffffff");
 
   const colorOptions = [
     { name: "Black", value: "#000000" },
@@ -27,6 +28,21 @@ export default function PropertiesPanel({ selectedContent, onContentUpdate }: Pr
     { name: "Green", value: "#059669" },
     { name: "Purple", value: "#7C3AED" },
     { name: "Orange", value: "#D97706" },
+  ];
+
+  const backgroundColorOptions = [
+    { name: "White", value: "#ffffff" },
+    { name: "Light Gray", value: "#f9fafb" },
+    { name: "Warm Gray", value: "#fafaf9" },
+    { name: "Cool Gray", value: "#f8fafc" },
+    { name: "Light Blue", value: "#eff6ff" },
+    { name: "Light Green", value: "#f0fdf4" },
+    { name: "Light Purple", value: "#faf5ff" },
+    { name: "Light Yellow", value: "#fefce8" },
+    { name: "Light Pink", value: "#fdf2f8" },
+    { name: "Light Orange", value: "#fff7ed" },
+    { name: "Cream", value: "#fffbeb" },
+    { name: "Off White", value: "#fefefe" },
   ];
 
   const imageFitOptions = [
@@ -119,6 +135,43 @@ export default function PropertiesPanel({ selectedContent, onContentUpdate }: Pr
       onContentUpdate({
         ...selectedContent,
         mediaLinks
+      });
+    }
+  };
+
+  const handleBackgroundImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && selectedContent && onContentUpdate) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const imageUrl = event.target?.result as string;
+        onContentUpdate({
+          ...selectedContent,
+          backgroundImage: imageUrl
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleBackgroundColorChange = (color: string) => {
+    setBackgroundColor(color);
+    if (selectedContent && onContentUpdate) {
+      onContentUpdate({
+        ...selectedContent,
+        backgroundColor: color
+      });
+    }
+  };
+
+  const handleMediaSizeChange = (field: string, value: number) => {
+    if (selectedContent && onContentUpdate) {
+      onContentUpdate({
+        ...selectedContent,
+        content: {
+          ...selectedContent.content,
+          [field]: value
+        }
       });
     }
   };
@@ -563,6 +616,164 @@ export default function PropertiesPanel({ selectedContent, onContentUpdate }: Pr
                     </div>
                   )}
                 </div>
+              )}
+
+              {/* Background Settings - For all templates */}
+              <Separator />
+              <div>
+                <Label className="text-sm font-medium text-gray-700 mb-3 block">Background Settings</Label>
+                
+                {/* Background Color */}
+                <div className="mb-4">
+                  <Label className="text-sm font-medium text-gray-600 mb-2 block">Background Color</Label>
+                  <div className="grid grid-cols-4 gap-2 mb-2">
+                    {backgroundColorOptions.map((color) => (
+                      <button
+                        key={color.value}
+                        onClick={() => handleBackgroundColorChange(color.value)}
+                        className={`h-8 rounded border-2 transition-all ${
+                          backgroundColor === color.value
+                            ? 'border-bookcraft-primary ring-2 ring-bookcraft-primary/30'
+                            : 'border-gray-300 hover:border-gray-400'
+                        }`}
+                        style={{ backgroundColor: color.value }}
+                        title={color.name}
+                      />
+                    ))}
+                  </div>
+                  <Input
+                    type="color"
+                    value={backgroundColor}
+                    onChange={(e) => handleBackgroundColorChange(e.target.value)}
+                    className="w-full h-8"
+                    title="Custom color picker"
+                  />
+                </div>
+
+                {/* Background Image */}
+                <div className="mb-4">
+                  <Label className="text-sm font-medium text-gray-600 mb-2 block">Background Image</Label>
+                  <div className="relative">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleBackgroundImageUpload}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    />
+                    <Button
+                      variant="outline"
+                      className="w-full p-3 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-bookcraft-primary transition-colors"
+                    >
+                      <Image size={16} className="mr-2" />
+                      {selectedContent.backgroundImage ? 'Change Background' : 'Add Background Image'}
+                    </Button>
+                  </div>
+                  {selectedContent.backgroundImage && (
+                    <div className="mt-2 flex items-center justify-between">
+                      <div className="w-16 h-12 rounded border overflow-hidden">
+                        <img 
+                          src={selectedContent.backgroundImage} 
+                          alt="Background preview" 
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          if (selectedContent && onContentUpdate) {
+                            onContentUpdate({
+                              ...selectedContent,
+                              backgroundImage: undefined
+                            });
+                          }
+                        }}
+                        className="text-red-600 hover:text-red-700"
+                      >
+                        Remove
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Media Size Controls - Only for mixed-media template */}
+              {selectedContent.template === 'mixed-media' && (selectedContent.content.image || selectedContent.content.videoUrl) && (
+                <>
+                  <Separator />
+                  <div>
+                    <Label className="text-sm font-medium text-gray-700 mb-3 block">Media Size & Frame</Label>
+                    
+                    <div className="space-y-4">
+                      {/* Width Control */}
+                      <div>
+                        <Label className="text-sm font-medium text-gray-600 mb-2 block">
+                          Width: {selectedContent.content.mediaWidth || 100}%
+                        </Label>
+                        <Slider
+                          value={[selectedContent.content.mediaWidth || 100]}
+                          onValueChange={([value]) => handleMediaSizeChange('mediaWidth', value)}
+                          max={100}
+                          min={20}
+                          step={5}
+                          className="w-full"
+                        />
+                      </div>
+
+                      {/* Height Control */}
+                      <div>
+                        <Label className="text-sm font-medium text-gray-600 mb-2 block">
+                          Height: {selectedContent.content.mediaHeight || 100}%
+                        </Label>
+                        <Slider
+                          value={[selectedContent.content.mediaHeight || 100]}
+                          onValueChange={([value]) => handleMediaSizeChange('mediaHeight', value)}
+                          max={100}
+                          min={20}
+                          step={5}
+                          className="w-full"
+                        />
+                      </div>
+
+                      {/* Border Radius Control */}
+                      <div>
+                        <Label className="text-sm font-medium text-gray-600 mb-2 block">
+                          Corner Radius: {selectedContent.content.mediaBorderRadius || 8}px
+                        </Label>
+                        <Slider
+                          value={[selectedContent.content.mediaBorderRadius || 8]}
+                          onValueChange={([value]) => handleMediaSizeChange('mediaBorderRadius', value)}
+                          max={50}
+                          min={0}
+                          step={2}
+                          className="w-full"
+                        />
+                      </div>
+
+                      {/* Reset to Default */}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          if (selectedContent && onContentUpdate) {
+                            onContentUpdate({
+                              ...selectedContent,
+                              content: {
+                                ...selectedContent.content,
+                                mediaWidth: 100,
+                                mediaHeight: 100,
+                                mediaBorderRadius: 8
+                              }
+                            });
+                          }
+                        }}
+                        className="w-full"
+                      >
+                        Reset to Default Size
+                      </Button>
+                    </div>
+                  </div>
+                </>
               )}
 
               {/* Video Player Template */}

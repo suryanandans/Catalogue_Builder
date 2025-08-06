@@ -75,7 +75,16 @@ export const templates: Template[] = [
       </div>
     ),
     content: (props) => (
-      <div className="space-y-4 h-full">
+      <div 
+        className="space-y-4 h-full p-4 rounded-lg"
+        style={{ 
+          backgroundColor: props.backgroundColor || 'transparent',
+          backgroundImage: props.backgroundImage ? `url(${props.backgroundImage})` : 'none',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      >
         <h3 
           className="text-xl font-bold text-black" 
           data-testid="text-title"
@@ -106,7 +115,16 @@ export const templates: Template[] = [
       </div>
     ),
     content: (props) => (
-      <div className="relative h-full w-full">
+      <div 
+        className="relative h-full w-full p-4 rounded-lg"
+        style={{ 
+          backgroundColor: props.backgroundColor || 'transparent',
+          backgroundImage: props.backgroundImage ? `url(${props.backgroundImage})` : 'none',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      >
         {props.image ? (
           <MediaWithDraggableIcons
             eyeIcons={props.eyeIcons || []}
@@ -158,7 +176,16 @@ export const templates: Template[] = [
       </div>
     ),
     content: (props) => (
-      <div className="flex items-center justify-center h-full text-center">
+      <div 
+        className="flex items-center justify-center h-full text-center p-4 rounded-lg"
+        style={{ 
+          backgroundColor: props.backgroundColor || 'transparent',
+          backgroundImage: props.backgroundImage ? `url(${props.backgroundImage})` : 'none',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      >
         <div>
           <Quote className="text-3xl text-gray-300 mb-4 mx-auto" size={32} />
           <blockquote 
@@ -198,7 +225,16 @@ export const templates: Template[] = [
       </div>
     ),
     content: (props) => (
-      <div className="space-y-4 h-full">
+      <div 
+        className="space-y-4 h-full p-4 rounded-lg"
+        style={{ 
+          backgroundColor: props.backgroundColor || 'transparent',
+          backgroundImage: props.backgroundImage ? `url(${props.backgroundImage})` : 'none',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
+      >
         <h3 
           className="text-lg font-bold text-black" 
           data-testid="text-mixed-title"
@@ -206,7 +242,15 @@ export const templates: Template[] = [
         >
           {props.title || "Mixed Content"}
         </h3>
-        <div className="flex-1 bg-gray-200 rounded-lg flex items-center justify-center min-h-32">
+        <div 
+          className="flex-1 bg-gray-200 rounded-lg flex items-center justify-center min-h-32"
+          style={{
+            width: `${props.mediaWidth || 100}%`,
+            height: `${props.mediaHeight || 100}%`,
+            borderRadius: `${props.mediaBorderRadius || 8}px`,
+            margin: '0 auto'
+          }}
+        >
           {props.image ? (
             <MediaWithDraggableIcons
               eyeIcons={props.eyeIcons || []}
@@ -216,7 +260,8 @@ export const templates: Template[] = [
               <img 
                 src={props.image} 
                 alt="Media content" 
-                className={`w-full h-full ${props.imageFit || 'object-cover'} rounded-lg`}
+                className={`w-full h-full ${props.imageFit || 'object-cover'}`}
+                style={{ borderRadius: `${props.mediaBorderRadius || 8}px` }}
                 data-testid="mixed-image"
               />
             </MediaWithDraggableIcons>
@@ -233,7 +278,8 @@ export const templates: Template[] = [
                 autoPlay={props.isPreview}
                 muted={props.isPreview}
                 loop={props.isPreview}
-                className={`w-full h-full ${props.videoFit || 'object-cover'} rounded-lg`}
+                className={`w-full h-full ${props.videoFit || 'object-cover'}`}
+                style={{ borderRadius: `${props.mediaBorderRadius || 8}px` }}
                 data-testid="mixed-video"
               />
             </MediaWithDraggableIcons>
