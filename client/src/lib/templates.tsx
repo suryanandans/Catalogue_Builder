@@ -76,7 +76,7 @@ export const templates: Template[] = [
     ),
     content: (props) => (
       <div 
-        className="space-y-4 h-full p-4 rounded-lg"
+        className={`space-y-4 h-full ${props.isPreview ? '' : 'p-4 rounded-lg'}`}
         style={{ 
           backgroundColor: props.backgroundColor || 'transparent',
           backgroundImage: props.backgroundImage ? `url(${props.backgroundImage})` : 'none',
@@ -116,7 +116,7 @@ export const templates: Template[] = [
     ),
     content: (props) => (
       <div 
-        className="relative h-full w-full p-4 rounded-lg"
+        className={`relative h-full w-full ${props.isPreview ? '' : 'p-4 rounded-lg'}`}
         style={{ 
           backgroundColor: props.backgroundColor || 'transparent',
           backgroundImage: props.backgroundImage ? `url(${props.backgroundImage})` : 'none',
@@ -177,7 +177,7 @@ export const templates: Template[] = [
     ),
     content: (props) => (
       <div 
-        className="flex items-center justify-center h-full text-center p-4 rounded-lg"
+        className={`flex items-center justify-center h-full text-center ${props.isPreview ? '' : 'p-4 rounded-lg'}`}
         style={{ 
           backgroundColor: props.backgroundColor || 'transparent',
           backgroundImage: props.backgroundImage ? `url(${props.backgroundImage})` : 'none',
@@ -226,7 +226,7 @@ export const templates: Template[] = [
     ),
     content: (props) => (
       <div 
-        className="space-y-4 h-full p-4 rounded-lg"
+        className={`space-y-4 h-full ${props.isPreview ? '' : 'p-4 rounded-lg'}`}
         style={{ 
           backgroundColor: props.backgroundColor || 'transparent',
           backgroundImage: props.backgroundImage ? `url(${props.backgroundImage})` : 'none',
