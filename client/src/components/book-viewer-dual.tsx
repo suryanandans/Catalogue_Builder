@@ -259,7 +259,7 @@ export default function BookViewer({ project, onPageChange }: BookViewerProps) {
               </div>
 
               {/* Minimal Center Binding */}
-              <div style={{ width: "2px", backgroundColor: "#e0e0e0", height: "500px" }} />
+              <div style={{ width: "0.5px", backgroundColor: "#000000", height: "500px" }} />
 
               {/* Right Page */}
               <div className="book-page-static bg-white relative shadow-2xl pointer-events-none select-none"
